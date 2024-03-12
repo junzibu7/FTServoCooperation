@@ -34,18 +34,19 @@ int main(int argc, char **argv)
 	char* serial_ = "/dev/ttyUSB0";
 	
 	_servo.init(serial_, 1, nh,{1,2});
-
+	ros::Duration(5.0).sleep();
+	std::cout<<"servo has been initialed!"<<std::endl;
 	while (1)
 	{
-		ros::Subscriber sub = nh.subscribe<geometry_msgs::PoseStamped>("/kun0/multi_camera_cooperation_ros/mulcam_pnp/T_body_to_drone", 1, Callback);
+		ros::Subscriber sub = nh.subscribe<geometry_msgs::PoseStamped>("/kun0/multi_camera_cooperation_ros/mulcam_pnp/T_camera_to_drone", 1, Callback);
 		if(flag == true){
-			double angle1 = atan(y/x);
+			double angle1 = - atan(y/x) * 180 / 5 + 180;
 			_servo.move(angle1,1);
-			std::cout<<"1 moving"<<std::endl;
+			std::cout<<"1 moving angle:"<<angle1<<std::endl;
 
-			double angle2 = atan(z/sqrt(x*x+y*y));
+			double angle2 = atan(z/sqrt(x*x+y*y)) * 180 / 10 + 90;
 			_servo.move(angle2,2);	
-			std::cout<<"2 moving"<<std::endl;
+			std::cout<<"2 moving angle:"<<angle2<<std::endl;
 			flag = false;
 		}
 		ros::Duration(1.0).sleep();

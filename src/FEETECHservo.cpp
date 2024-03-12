@@ -15,7 +15,7 @@ void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh)
     {
         id_list.push_back(i);
     }
-    if (!sm_st.begin(100000, serial))
+    if (!sm_st.begin(20000, serial))
     {
         std::cout << "Failed to init sms/sts motor!" << std::endl;
         return;
