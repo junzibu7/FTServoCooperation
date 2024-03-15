@@ -10,6 +10,9 @@ double x, y, z;
 
 
 bool flag;
+int id_up;
+int id_down;
+int up_initial;
 
 void Callback(const geometry_msgs::PoseStamped msg_T_body_to_drone)
 {
@@ -30,33 +33,61 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "control");
 	ros::NodeHandle nh;
+	nh.param<int>("control/id_up", id_up, 2);
+    nh.param<int>("control/id_down", id_down, 1);
+    nh.param<int>("control/up_initial", up_initial, 180);
 	ftServo _servo;
 	char* serial_ = "/dev/ttyUSB0";
 	
-	_servo.init(serial_, 1, nh,{1,2});
-	ros::Duration(5.0).sleep();
+	
+	_servo.init(serial_, 2, nh,{id_down, 2});
 	std::cout<<"servo has been initialed!"<<std::endl;
-	while (1)
-	{
-		ros::Subscriber sub = nh.subscribe<geometry_msgs::PoseStamped>("/kun0/multi_camera_cooperation_ros/mulcam_pnp/T_camera_to_drone", 1, Callback);
-		if(flag == true){
-			double angle1 = - atan(y/x) * 180 / 5 + 180;
-			_servo.move(angle1,1);
-			std::cout<<"1 moving angle:"<<angle1<<std::endl;
+	// while (1)
+	// {
+	// 	ros::Subscriber sub = nh.subscribe<geometry_msgs::PoseStamped>("/kun0/multi_camera_cooperation_ros/mulcam_pnp/T_camera_to_drone", 1, Callback);
+	// 	if(flag == true){
+	// 		double angle1 = - atan(y/x) * 180 / 5 + 180;
+	// 		_servo.move(angle1,1);
+	// 		std::cout<<"1 moving angle:"<<angle1<<std::endl;
 
-			double angle2 = atan(z/sqrt(x*x+y*y)) * 180 / 10 + 90;
-			_servo.move(angle2,2);	
-			std::cout<<"2 moving angle:"<<angle2<<std::endl;
-			flag = false;
-		}
-		ros::Duration(1.0).sleep();
-		ros::spinOnce();
-	}
-	
-	
+	// 		double angle2 = atan(z/sqrt(x*x+y*y)) * 180 / 10 + 90;
+	// 		_servo.move(angle2,2);	
+	// 		std::cout<<"2 moving angle:"<<angle2<<std::endl;
+	// 		flag = false;
+	// 	}
+	// 	ros::Duration(1.0).sleep();
+	// 	ros::spinOnce();
+	// }
 
+	x = 4;
+	y = 2;
+	z = 2;
 	
+	double angle1 = - atan(y/x) * 180 / 5 + 180;
+	_servo.move(angle1,id_down);
+	std::cout<<"down moving angle:"<<angle1<<std::endl;
+
+	double angle2 = atan(z/sqrt(x*x+y*y)) * 180 / 10 + up_initial;
+	_servo.move(angle2, id_up);	
+	std::cout<<"up moving angle:"<<angle2<<std::endl;
+	// flag = false;
+
+	ros::Duration(1.0).sleep();
 	
+	x = 4;
+	y = -2;
+	z = -2;
+	
+	angle1 = - atan(y/x) * 180 / 5 + 180;
+	_servo.move(angle1,id_down);
+	std::cout<<"1 moving angle:"<<angle1<<std::endl;
+
+	angle2 = atan(z/sqrt(x*x+y*y)) * 180 / 10 + up_initial;//90 id:1\2;180:id:7/8
+	_servo.move(angle2,id_up);	
+	std::cout<<"2 moving angle:"<<angle2<<std::endl;
+	// flag = false;
+
+	ros::Duration(1.0).sleep();
 
 
 	

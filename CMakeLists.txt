@@ -27,14 +27,16 @@ add_library(ftservoControl
 
 target_link_libraries( ftservoControl
     ${catkin_LIBRARIES} 
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so
+    # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
     )  
 
 add_executable(WritePos src/WritePos.cpp)
 target_link_libraries(WritePos
   ${catkin_LIBRARIES}
   ftservoControl
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so
+  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
 add_dependencies(WritePos ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -49,7 +51,8 @@ add_executable(initialize src/initialize.cpp)
 target_link_libraries(initialize
   ${catkin_LIBRARIES}
   ftservoControl
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so
+  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
 add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -57,6 +60,7 @@ add_executable(control src/control.cpp)
 target_link_libraries(control
   ${catkin_LIBRARIES}
   ftservoControl
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so
+  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
 add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

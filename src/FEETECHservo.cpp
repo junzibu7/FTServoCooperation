@@ -15,7 +15,7 @@ void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh)
     {
         id_list.push_back(i);
     }
-    if (!sm_st.begin(20000, serial))
+    if (!sm_st.begin(100000, serial))
     {
         std::cout << "Failed to init sms/sts motor!" << std::endl;
         return;
@@ -139,4 +139,26 @@ bool ftServo::find_id(int id, int &index)
         }
     }
     return false;
+}
+
+bool ftServo::ping(int id)
+{
+    int index;
+    bool sucess = find_id(id, index);
+    if (!sucess)
+    {
+        ROS_ERROR("Wrong input of id");
+        return false;
+    }
+    int ID = sm_st.Ping(id);
+    if (ID != -1)
+    {
+        ROS_INFO("ID:%i", ID);
+        return true;
+    }
+    else
+    {
+        ROS_WARN("Ping ID wrong");
+        return false;
+    }
 }

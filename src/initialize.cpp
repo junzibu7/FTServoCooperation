@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "initialize");
 	ros::NodeHandle nh;
-	int modified_id;
+	int modified_id ;
 	const char *_serial;
 	std::string serial_string;
 	nh.param("/initialize/ftservo/id", modified_id, 1);
@@ -20,10 +20,11 @@ int main(int argc, char **argv)
 	std::cout<<modified_id<<std::endl;
 	_serial = serial_string.c_str();
 	ftServo _servo;
-	std::vector<int> ID_list = {1};
-	_servo.init(_serial, 1, nh,ID_list);
-	_servo.rename(1, modified_id);
+	std::vector<int> ID_list = {1, 2};
+	_servo.init(_serial, 2, nh, ID_list);
+	_servo.rename(2, modified_id);
 	_servo.reset(modified_id);
+	_servo.ping(2);
 	ROS_INFO("Modification completed. The modified ID is: %d", modified_id);
 	return 0;
 }
