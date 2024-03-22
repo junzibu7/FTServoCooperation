@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="ftservoControl" type="control" name="control" output="screen" >
+    <param name="id_up" type="int" value="8" />
+    <param name="id_down" type="int" value="7" />
+    </node>
+</launch>

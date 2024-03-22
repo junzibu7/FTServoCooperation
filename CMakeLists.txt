@@ -6,6 +6,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  tf
   std_msgs
   geometry_msgs
 )
@@ -56,8 +57,8 @@ target_link_libraries(initialize
  )
 add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(control src/control.cpp)
-target_link_libraries(control
+add_executable(singleServoControl src/singleServoControl.cpp)
+target_link_libraries(singleServoControl
   ${catkin_LIBRARIES}
   ftservoControl
   # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
