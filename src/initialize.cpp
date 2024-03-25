@@ -20,11 +20,11 @@ int main(int argc, char **argv)
 	std::cout<<modified_id<<std::endl;
 	_serial = serial_string.c_str();
 	ftServo _servo;
-	std::vector<int> ID_list = {1, 2};
+	std::vector<int> ID_list = {7, 8};
 	_servo.init(_serial, 2, nh, ID_list);
-	_servo.rename(2, modified_id);
+	_servo.rename(8, modified_id);
 	_servo.reset(modified_id);
-	_servo.ping(2);
+	_servo.ping(8);
 	ROS_INFO("Modification completed. The modified ID is: %d", modified_id);
 	return 0;
 }
