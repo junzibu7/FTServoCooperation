@@ -84,28 +84,26 @@ int main(int argc, char **argv)
 		y = camera_to_drone.getOrigin().y();
 		z = camera_to_drone.getOrigin().z();
 		std::cout <<"(TF_camera_to_drone)  x:"<< x <<"y:"<< y <<"z:"<< z << std::endl;
-		// if (flag == true)
-		// {
-		// 	//下方舵机旋转
-		// 	down_status = - atan(y/x) / pi * 180 + down_status;
-		// 	down_status = min(max(down_status, 50), 310);
-		// 	// _servo.move(down_status,id_down);
-		// 	std::cout<<"down moving angle:"<<down_status<<std::endl;
 
-		// 	//上方舵机旋转
-		// 	up_status = atan(z/sqrt(x*x+y*y)) / pi * 180 / 2 + up_status;
-		// 	up_status = min(max(up_status, 100), 260);
+		//下方舵机旋转
+		down_status = - atan(y/x) / pi * 180 + down_status;
+		down_status = min(max(down_status, 50), 310);
+		// _servo.move(down_status,id_down);
+		std::cout<<"down moving angle:"<<down_status<<std::endl;
+
+		//上方舵机旋转
+		up_status = atan(z/sqrt(x*x+y*y)) / pi * 180 / 2 + up_status;
+		up_status = min(max(up_status, 100), 260);
 		// 	// _servo.move(up_status,id_up);	
-		// 	std::cout<<"up moving angle:"<<up_status<<std::endl;
+		std::cout<<"up moving angle:"<<up_status<<std::endl;
 
-			//维护tf树
-			servogroup_to_camera.setOrigin(tf::Vector3(0, 0, 0));
-			tf::Quaternion q;
-    		q.setRPY(0, 0, 0);
-			servogroup_to_camera.setRotation(q);
-			br.sendTransform(tf::StampedTransform(servogroup_to_camera, ros::Time::now(), "servogroup"+to_string(id_down)+to_string(id_up), cam));
-		// 	flag = false;
-		// }
+		//维护tf树
+		servogroup_to_camera.setOrigin(tf::Vector3(0, 0, 0));
+		tf::Quaternion q;
+    	q.setRPY(0, 0, 0);
+		servogroup_to_camera.setRotation(q);
+		br.sendTransform(tf::StampedTransform(servogroup_to_camera, ros::Time::now(), "servogroup"+to_string(id_down)+to_string(id_up), cam));
+
 		ros::Duration(0.03).sleep();
 		// ros::spinOnce();
 	}
