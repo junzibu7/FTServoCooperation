@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(ftservoControl)
+
+
 set(CMAKE_CXX_FLAGS "-fPIC")
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
@@ -17,14 +19,17 @@ catkin_package(
   CATKIN_DEPENDS roscpp rospy std_msgs
 )
 
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+add_definitions(${EIGEN_DEFINITIONS})
+
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(ftservoControl
-  src/FEETECHservo.cpp
-)
+add_library(ftservoControl src/FEETECHservo.cpp)
+add_library(math_tools_lib src/math_tools.cpp)
 
 target_link_libraries( ftservoControl
     ${catkin_LIBRARIES} 
@@ -61,6 +66,7 @@ add_executable(singleServoControl src/singleServoControl.cpp)
 target_link_libraries(singleServoControl
   ${catkin_LIBRARIES}
   ftservoControl
+  math_tools_lib
   # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
   ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
