@@ -77,21 +77,34 @@ int main(int argc, char **argv)
 	nh.param<string>("singleServoControl/serial", serial_str, "/dev/ttyUSB0");
 	const char *serial_ = serial_str.c_str();
 
-	// ftServo _servo;
+	ftServo _servo;
 
 
 	ros::Rate rate(30);
 
-	// _servo.init(serial_, 2, nh,{id_down, id_up});
-	// _servo.move(down_status,id_down);
-	// _servo.move(up_status,id_up);
+	_servo.init(serial_, 2, nh,{id_down, id_up});
+	_servo.move(down_status,id_down);
+	_servo.move(up_status,id_up);
+	ros::Duration(1).sleep();
 
 	std::cout<<"system has been initialed!"<<std::endl;
 	pub_servogroup_to_cam = nh.advertise<geometry_msgs::TransformStamped>("/T_servogroup"+to_string(id_down)+to_string(id_up)+"_to_"+cam, 1);
 
 	while (ros::ok())
 	{
-	
+		//计算舵机组到相机的变换
+		T_servogroup_to_camera((down_status - 180) / 180 * pi, (up_status - 180) / 180 * pi);
+
+		cout<<"T_servogroup_to_cam"<<endl<<T_servogroup_to_cam<<endl;
+		servogroup_to_cam.setOrigin(EigenVector3dToTFVector3(T_servogroup_to_cam.block<3,1>(0,3)));
+		servogroup_to_cam.setRotation(EigenQuaterniondToTFQuaternion(Eigen::Quaterniond(T_servogroup_to_cam.block<3,3>(0,0))));
+		servogroup_to_cam.stamp_ = ros::Time::now();
+		servogroup_to_cam.frame_id_ = "servogroup"+to_string(id_down)+to_string(id_up);
+		servogroup_to_cam.child_frame_id_ = cam;
+		tf::transformStampedTFToMsg(servogroup_to_cam, msg_servogroup_to_cam);
+        pub_servogroup_to_cam.publish(msg_servogroup_to_cam);
+        br.sendTransform(msg_servogroup_to_cam);
+
 		try{
         	// 等待变换
 			lr.waitForTransform(target_frame, source_frame, ros::Time(0), ros::Duration(0.1));
@@ -136,7 +149,7 @@ int main(int argc, char **argv)
 			down_status = down_change + down_status;
 			// down_status = (abs(down_change) > 2) * down_change + down_status;
 			down_status = min(max(down_status, 50.0), 310.0);
-			// _servo.move(down_status,id_down);
+			_servo.move(down_status,id_down);
 			std::cout<<"down moving angle:"<<down_change<<std::endl;
 			std::cout<<"down angle:"<<down_status<<std::endl;
 
@@ -145,29 +158,16 @@ int main(int argc, char **argv)
 			up_status = up_change + up_status;
 			// up_status = (abs(up_change) > 3) * up_change + up_status;
 			up_status = min(max(up_status, 135.0), 225.0);
-			// 	// _servo.move(up_status,id_up);	
+			_servo.move(up_status,id_up);	
 			std::cout<<"up moving angle:"<<up_change<<std::endl;
 			std::cout<<"up angle:"<<up_status<<std::endl;
 			flag = false;
 		}
+		ros::Duration(1).sleep();
+		// ros::spinOnce();
+		// rate.sleep();
 
 		
-
-		T_servogroup_to_camera((down_status - 180) / 180 * pi, (up_status - 180) / 180 * pi);
-
-		cout<<"T_servogroup_to_cam"<<endl<<T_servogroup_to_cam<<endl;
-		servogroup_to_cam.setOrigin(EigenVector3dToTFVector3(T_servogroup_to_cam.block<3,1>(0,3)));
-		servogroup_to_cam.setRotation(EigenQuaterniondToTFQuaternion(Eigen::Quaterniond(T_servogroup_to_cam.block<3,3>(0,0))));
-		servogroup_to_cam.stamp_ = ros::Time::now();
-		servogroup_to_cam.frame_id_ = "servogroup"+to_string(id_down)+to_string(id_up);
-		servogroup_to_cam.child_frame_id_ = cam;
-		tf::transformStampedTFToMsg(servogroup_to_cam, msg_servogroup_to_cam);
-        pub_servogroup_to_cam.publish(msg_servogroup_to_cam);
-        br.sendTransform(msg_servogroup_to_cam);
-
-		ros::Duration(1).sleep();
-		ros::spinOnce();
-		rate.sleep();
 	}
 	
 	return 0;

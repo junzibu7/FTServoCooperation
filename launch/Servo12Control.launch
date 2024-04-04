@@ -6,7 +6,7 @@
         <param name="source_frame" type="string" value="EstimationfromcamA" />
         <param name="target_frame" type="string" value="camA" />
         <param name="cam" type="string" value="camA" />
-        <param name="serial_" type="string" value="/dev/ttyUSB0" />
+        <param name="serial" type="string" value="/dev/ttyUSB0" />
     </node>
     </group>
 </launch>

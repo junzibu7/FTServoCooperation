@@ -1,5 +1,5 @@
 <launch>
-    <arg name="modified_id" default="8"/> 
+    <arg name="modified_id" default="1"/> 
     <arg name="port" default="/dev/ttyUSB0"/>
 
     <node pkg="ftservoControl" type="initialize" name="initialize" output="screen" >
