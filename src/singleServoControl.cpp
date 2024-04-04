@@ -47,8 +47,11 @@ Eigen::Matrix4Xd T_cam_to_coopestimation = Eigen::Matrix4d::Identity();
 Eigen::Matrix4Xd T_cam_to_estimation = Eigen::Matrix4d::Identity();
 
 ros::Publisher pub_servogroup_to_cam;
+ros::Subscriber sub_cam_to_estimation;
+ros::Subscriber sub_cam_to_coopestimation;
 tf::StampedTransform servogroup_to_cam;
 tf::StampedTransform cam_to_estimation;
+tf::StampedTransform cam_to_coopestimation;
 geometry_msgs::TransformStamped msg_servogroup_to_cam;
 
 void T_servogroup_to_camera(double id_down, double id_up){
@@ -60,6 +63,13 @@ void T_servogroup_to_camera(double id_down, double id_up){
 	T_servogroup_to_cam = T01 * T12 * T23 * T34;
 	
 }
+
+void T_cam_to_estimation_callback(const geometry_msgs::TransformStamped &msg){
+	cam_to_estimation.setOrigin(tf::Vector3(msg.transform.translation.x, msg.transform.translation.y, msg.transform.translation.z));
+	cam_to_estimation.setRotation(tf::Quaternion(msg.transform.rotation.x, msg.transform.rotation.y, msg.transform.rotation.z, msg.transform.rotation.w));
+	flag = true;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -89,7 +99,8 @@ int main(int argc, char **argv)
 
 	std::cout<<"system has been initialed!"<<std::endl;
 	pub_servogroup_to_cam = nh.advertise<geometry_msgs::TransformStamped>("/T_servogroup"+to_string(id_down)+to_string(id_up)+"_to_"+cam, 1);
-
+	sub_cam_to_estimation = nh.subscribe("/"+cam+"/single_cam_process_ros/ir_mono/T_cam_to_estimation", 1, T_cam_to_estimation_callback);
+	
 	while (ros::ok())
 	{
 		//计算舵机组到相机的变换
@@ -105,18 +116,7 @@ int main(int argc, char **argv)
         pub_servogroup_to_cam.publish(msg_servogroup_to_cam);
         br.sendTransform(msg_servogroup_to_cam);
 
-		try{
-        	// 等待变换
-			lr.waitForTransform(target_frame, source_frame, ros::Time(0), ros::Duration(0.1));
-			// 查询坐标系关系
-			lr.lookupTransform(target_frame, source_frame, ros::Time(0), cam_to_estimation);
-
-			flag = true;
-        }
-        catch(tf::TransformException &ex)
-        {
-			ROS_ERROR("correct to CoopEstimation");
-
+		if(flag == false)
 			try{
 				// 等待变换
 				lr.waitForTransform(target_frame, "CoopEstimation", ros::Time(0), ros::Duration(1.0));
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 			{
 				ROS_ERROR("%s", ex.what());
 			}
-		}
+
 
 		if(flag){
 			x = cam_to_estimation.getOrigin().x();
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 			flag = false;
 		}
 		ros::Duration(1).sleep();
-		// ros::spinOnce();
+		ros::spinOnce();
 		// rate.sleep();
 
 		
