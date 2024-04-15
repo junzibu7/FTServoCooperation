@@ -25,7 +25,7 @@ void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh)
     current_speed.resize(num);
     std::fill(target_angle.begin(), target_angle.end(), 180.0);
     std::fill(current_speed.begin(), current_speed.end(), 2400);
-    update_timer = nh_.createTimer(ros::Duration(0.025), &ftServo::update_servo_state, this);
+    // update_timer = nh_.createTimer(ros::Duration(0.025), &ftServo::update_servo_state, this);
 }
 
 void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh, std::vector<int> ID_list)
@@ -43,7 +43,7 @@ void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh, std:
     current_speed.resize(num);
     std::fill(target_angle.begin(), target_angle.end(), 180.0);
     std::fill(current_speed.begin(), current_speed.end(), 2400);
-    update_timer = nh_.createTimer(ros::Duration(0.025), &ftServo::update_servo_state, this);
+    // update_timer = nh_.createTimer(ros::Duration(0.025), &ftServo::update_servo_state, this);
 }
 
 void ftServo::move(double angle, int id, double speed)
