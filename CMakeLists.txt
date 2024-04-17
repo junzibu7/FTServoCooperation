@@ -4,7 +4,7 @@ project(ftservoControl)
 
 set(CMAKE_CXX_FLAGS "-fPIC")
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-set(cv_bridge_DIR ~/catkin_make/src/cv_bridge/cmake) #nvidia
+# set(cv_bridge_DIR ~/catkin_make/src/cv_bridge/cmake) #nvidia
 
 find_package(OpenCV 4.2.0 REQUIRED)
 
@@ -37,16 +37,16 @@ add_library(math_tools_lib src/math_tools.cpp)
 
 target_link_libraries( ftservoControl
     ${catkin_LIBRARIES} 
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-    # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
+    # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
     )  
 
 add_executable(WritePos src/WritePos.cpp)
 target_link_libraries(WritePos
   ${catkin_LIBRARIES}
   ftservoControl
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
+  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
 add_dependencies(WritePos ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -61,8 +61,8 @@ add_executable(initialize src/initialize.cpp)
 target_link_libraries(initialize
   ${catkin_LIBRARIES}
   ftservoControl
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
+  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
 add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -71,7 +71,7 @@ target_link_libraries(singleServoControl
   ${catkin_LIBRARIES}
   ftservoControl
   math_tools_lib
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
+  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
+  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
  )
 add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
