@@ -10,17 +10,16 @@
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "ftServoWritePos");
-	ros::NodeHandle nh;
-	int modified_id;
-	const char *_serial;
-	std::string serial_string;
-	nh.param("ftservo/id", modified_id, 1);
-	nh.param("ftservo/serial", serial_string, std::string("/dev/ttyUSB0"));
-	_serial = serial_string.c_str();
-	ftServo _servo;
+	rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("ftServoWritePos");
+
+    int modified_id = node->declare_parameter<int>("ftservo.id", 1);
+    std::string serial_string = node->declare_parameter<std::string>("ftservo.serial", "/dev/ttyUSB0");
+    const char *_serial = serial_string.c_str();
+
+    ftServo _servo;
 	// std::vector<int> IDs = {2};
-	_servo.init(_serial, 1, nh);/*只连接一个舵机，且其编号是1*/
+	_servo.init(_serial, 1, node);/*只连接一个舵机，且其编号是1*/
 	//注意！！！初始化会将所有的舵机重置为180deg！！！！
 	// _servo.init(_serial, 1, nh, IDs);/*只连接一个舵机，且其编号是2*/
 	// _servo.init(_serial, 2, nh);/*连接两个舵机，且其编号是{1,2}*/
@@ -39,8 +38,9 @@ int main(int argc, char **argv)
 	// _servo.rename(1,2);
 	// std::cout<<"rename 1 to 2"<<std::endl;
 	// ros::Duration(1.0).sleep();
-	ROS_INFO("Modification completed. The modified ID is: %d", modified_id);
+	RCLCPP_INFO(node->get_logger(), "Modification completed. The modified ID is: %d", modified_id);
 
-	ros::spin();
-	return 0;
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }

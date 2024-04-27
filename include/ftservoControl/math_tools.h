@@ -14,9 +14,10 @@
 #include <chrono>
 #include <sstream>
 
-#include <tf_conversions/tf_eigen.h>
-#include <tf/transform_broadcaster.h>
-#include <tf/transform_datatypes.h> 
+#include <tf2/convert.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
 
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
@@ -33,11 +34,14 @@
 #include <opencv2/video/tracking.hpp>
 #include <cv_bridge/cv_bridge.h>
 
+#include <geometry_msgs/msg/quaternion.hpp>
+
 using namespace std;
 
 const double pi = 3.1415926;
 
-geometry_msgs::Quaternion euler2quaternion(float roll, float pitch, float yaw);
+
+geometry_msgs::msg::Quaternion euler2quaternion(float roll, float pitch, float yaw);
 Eigen::Quaterniond euler2quaternion_eigen(float roll, float pitch, float yaw);
 Eigen::Vector3d  quaternion2euler(float x, float y, float z, float w);
 void getEulerAngles(cv::Vec3d &rvec, Eigen::Vector3d &eulerAngles, Eigen::Quaterniond &q);
@@ -48,12 +52,12 @@ double vectorAngle(Eigen::Vector2d& vec1, Eigen::Vector2d& vec2, int method);
 bool checkRotationDirection(Eigen::Vector2d& init, Eigen::Vector2d& final);
 Eigen::Vector2d subtractPoints(cv::Point2f& point1, cv::Point2f& point2);
 
-//Eigen2TF
-tf::Quaternion EigenQuaterniondToTFQuaternion(Eigen::Quaterniond q_EIGEN) ;
-tf::Vector3 EigenVector3dToTFVector3(Eigen::Vector3d t);
+// Eigen2TF
+tf2::Quaternion EigenQuaterniondToTFQuaternion(Eigen::Quaterniond q_EIGEN);
+tf2::Vector3 EigenVector3dToTFVector3(Eigen::Vector3d t_EIGEN);
 
-//TF2Eigen
-Eigen::Quaterniond TFQuaternionToEigenQuaterniond(tf::Quaternion q_TF);
-Eigen::Vector3d TFVector3ToEigenVector3d(tf::Vector3 t);
+// TF2Eigen
+Eigen::Quaterniond TFQuaternionToEigenQuaterniond(tf2::Quaternion q_TF);
+Eigen::Vector3d TFVector3ToEigenVector3d(tf2::Vector3 t_TF);
 
 #endif

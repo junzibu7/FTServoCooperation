@@ -11,8 +11,8 @@
 * @param yaw
 * @return 返回四元数
 */
-geometry_msgs::Quaternion euler2quaternion(float roll, float pitch, float yaw) {
-    geometry_msgs::Quaternion temp;
+geometry_msgs::msg::Quaternion euler2quaternion(float roll, float pitch, float yaw) {
+    geometry_msgs::msg::Quaternion temp;
     temp.w = cos(roll / 2) * cos(pitch / 2) * cos(yaw / 2) + sin(roll / 2) * sin(pitch / 2) * sin(yaw / 2);
     temp.x = sin(roll / 2) * cos(pitch / 2) * cos(yaw / 2) - cos(roll / 2) * sin(pitch / 2) * sin(yaw / 2);
     temp.y = cos(roll / 2) * sin(pitch / 2) * cos(yaw / 2) + sin(roll / 2) * cos(pitch / 2) * sin(yaw / 2);
@@ -128,9 +128,9 @@ Eigen::Vector2d subtractPoints(cv::Point2f& point1, cv::Point2f& point2) {
 } 
 
 
-tf::Quaternion EigenQuaterniondToTFQuaternion(Eigen::Quaterniond q_EIGEN) 
+tf2::Quaternion EigenQuaterniondToTFQuaternion(Eigen::Quaterniond q_EIGEN) 
 {
-    tf::Quaternion temp;
+    tf2::Quaternion temp;
     temp.setX(q_EIGEN.x());
     temp.setY(q_EIGEN.y());
     temp.setZ(q_EIGEN.z());
@@ -138,30 +138,30 @@ tf::Quaternion EigenQuaterniondToTFQuaternion(Eigen::Quaterniond q_EIGEN)
     return temp;
 } 
 
-tf::Vector3 EigenVector3dToTFVector3(Eigen::Vector3d t)
+tf2::Vector3 EigenVector3dToTFVector3(Eigen::Vector3d t_EIGEN)
 {
-    tf::Vector3 temp;
-    temp[0] = t[0];
-    temp[1] = t[1];
-    temp[2] = t[2];
+    tf2::Vector3 temp;
+    temp[0] = t_EIGEN[0];
+    temp[1] = t_EIGEN[1];
+    temp[2] = t_EIGEN[2];
     return temp;
 }
 
-Eigen::Quaterniond TFQuaternionToEigenQuaterniond(tf::Quaternion q)
+Eigen::Quaterniond TFQuaternionToEigenQuaterniond(tf2::Quaternion q_TF)
 {
     Eigen::Quaterniond temp;
-    temp.x() = q.x();
-    temp.y() = q.y();
-    temp.z() = q.z();
-    temp.w() = q.w();
+    temp.x() = q_TF.x();
+    temp.y() = q_TF.y();
+    temp.z() = q_TF.z();
+    temp.w() = q_TF.w();
     return temp;
 }
 
-Eigen::Vector3d TFVector3ToEigenVector3d(tf::Vector3 t)
+Eigen::Vector3d TFVector3ToEigenVector3d(tf2::Vector3 t_TF)
 {
     Eigen::Vector3d temp;
-    temp[0] = t[0];
-    temp[1] = t[1];
-    temp[2] = t[2];
+    temp[0] = t_TF[0];
+    temp[1] = t_TF[1];
+    temp[2] = t_TF[2];
     return temp;
 }

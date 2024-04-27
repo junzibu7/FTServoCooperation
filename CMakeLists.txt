@@ -1,77 +1,177 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.25.2)
 project(ftservoControl)
 
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
 
-set(CMAKE_CXX_FLAGS "-fPIC")
-set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-# set(cv_bridge_DIR ~/catkin_make/src/cv_bridge/cmake) #nvidia
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-find_package(OpenCV 4.2.0 REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS
-  cv_bridge
-  roscpp
-  rospy
-  tf
-  std_msgs
-  geometry_msgs
-)
+if($ENV{ROS_VERSION} EQUAL 1)
+#================================= ROS1 ==================================
+  message("Version : ROS1")
+  find_package(catkin REQUIRED COMPONENTS
+    cv_bridge
+    roscpp
+    rospy
+    tf
+    std_msgs
+    geometry_msgs
+  )
+  find_package(OpenCV 4.2.0 REQUIRED)
+  find_package(Eigen3 REQUIRED)
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ftservoControl
-  CATKIN_DEPENDS roscpp rospy std_msgs
-)
+  include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
+  )
+  add_definitions(${EIGEN_DEFINITIONS})
 
-find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
-add_definitions(${EIGEN_DEFINITIONS})
+  catkin_package(ServoControl
+    INCLUDE_DIRS include 
+    LIBRARIES ftservoControl
+    CATKIN_DEPENDS roscpp rospy std_msgs tf cv_bridge
+  )
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
+  add_library(ftservoControl src/FEETECHservo.cpp)
+  add_library(math_tools_lib src/math_tools.cpp)
 
-add_library(ftservoControl src/FEETECHservo.cpp)
-add_library(math_tools_lib src/math_tools.cpp)
-
-target_link_libraries( ftservoControl
+  target_link_libraries(ftservoControl
     ${catkin_LIBRARIES} 
-    # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
-    )  
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+  )  
+  add_executable(WritePos src/WritePos.cpp)
+  target_link_libraries(WritePos
+    ${catkin_LIBRARIES}
+    ftservoControl
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+  )
+  add_dependencies(WritePos ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(WritePos src/WritePos.cpp)
-target_link_libraries(WritePos
-  ${catkin_LIBRARIES}
-  ftservoControl
-  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
- )
-add_dependencies(WritePos ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+  # add_executable(servoControl src/servoControl.cpp)
+  # target_link_libraries(servoControl
+  #   ${catkin_LIBRARIES}
+  #   ${PROJECT_SOURCE_DIR}/include/ftservoControl/libSCServo.a
+  #  )
+  # add_dependencies(servoControl ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-# add_executable(servoControl src/servoControl.cpp)
-# target_link_libraries(servoControl
-#   ${catkin_LIBRARIES}
-#   ${PROJECT_SOURCE_DIR}/include/ftservoControl/libSCServo.a
-#  )
-# add_dependencies(servoControl ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+  add_executable(initialize src/initialize.cpp)
+  target_link_libraries(initialize
+    ${catkin_LIBRARIES}
+    ftservoControl
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+  )
+  add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(initialize src/initialize.cpp)
-target_link_libraries(initialize
-  ${catkin_LIBRARIES}
-  ftservoControl
-  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
- )
-add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+  add_executable(singleServoControl src/singleServoControl.cpp)
+  target_link_libraries(singleServoControl
+    ${catkin_LIBRARIES}
+    ftservoControl
+    math_tools_lib
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+  )
+  add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(singleServoControl src/singleServoControl.cpp)
-target_link_libraries(singleServoControl
-  ${catkin_LIBRARIES}
-  ftservoControl
-  math_tools_lib
-  # ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_arm/libSCServo.so #nvidia
-  ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #laptop
- )
-add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+else()
+#==================================== ROS2 ==================================
+  message("Version : ROS2")
+
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(rclpy REQUIRED)
+  find_package(std_msgs REQUIRED)
+  find_package(geometry_msgs REQUIRED)
+  find_package(tf2 REQUIRED)
+  find_package(tf2_ros REQUIRED)
+  find_package(cv_bridge REQUIRED)
+  find_package(OpenCV 4.2.0 REQUIRED)
+  find_package(Eigen3 REQUIRED)
+
+  include_directories(
+    include
+    ${OpenCV_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
+    ${tf2_INCLUDE_DIRS}
+  )
+  add_definitions(${EIGEN_DEFINITIONS})
+
+  add_library(ftservoControl SHARED src/FEETECHservo.cpp)
+  ament_target_dependencies(ftservoControl
+    rclcpp
+    std_msgs
+    tf2
+    cv_bridge
+    geometry_msgs
+    tf2_ros
+  )
+
+  add_library(math_tools_lib SHARED src/math_tools.cpp)
+  ament_target_dependencies(math_tools_lib
+    rclcpp
+    std_msgs
+    tf2
+    cv_bridge
+    geometry_msgs
+    tf2_ros
+  )
+
+  add_executable(WritePos src/WritePos.cpp)
+  ament_target_dependencies(WritePos rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(WritePos
+    ftservoControl
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.a #x86
+  )
+
+  add_executable(initialize src/initialize.cpp)
+  ament_target_dependencies(initialize rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(initialize
+    ftservoControl
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.a #x86
+  )
+
+  add_executable(singleServoControl src/singleServoControl.cpp)
+  ament_target_dependencies(singleServoControl rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(singleServoControl
+    ftservoControl
+    math_tools_lib
+    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.a #x86
+  )
+
+  install(TARGETS 
+    singleServoControl
+    ftservoControl
+    math_tools_lib
+    WritePos
+    initialize
+    DESTINATION lib/${PROJECT_NAME}
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
+
+  install(DIRECTORY 
+    launch
+    DESTINATION share/${PROJECT_NAME}
+  )
+
+  if(BUILD_TESTING)
+    find_package(ament_lint_auto REQUIRED)
+    ament_lint_auto_find_test_dependencies()
+  endif()
+
+  ament_package()
+
+endif()
+
+
+
+
+
+
+
+
+

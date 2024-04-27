@@ -7,7 +7,8 @@
  * @Description: API for FEETECHServo contol
  */
 #include <ftservoControl/FEETECHservo.h>
-void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh)
+
+void ftServo::init(const char *serial, int num_servos, rclcpp::Node::SharedPtr &nh)
 {
     nh_ = nh;
     num = num_servos;
@@ -25,10 +26,13 @@ void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh)
     current_speed.resize(num);
     std::fill(target_angle.begin(), target_angle.end(), 180.0);
     std::fill(current_speed.begin(), current_speed.end(), 2400);
-    // update_timer = nh_.createTimer(ros::Duration(0.025), &ftServo::update_servo_state, this);
+    // update_timer = nh_->create_wall_timer(
+    //     std::chrono::milliseconds(25),
+    //     std::bind(&YourClassName::update_servo_state, this));
+    RCLCPP_INFO(nh->get_logger(), "Init FEETECHservo");
 }
 
-void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh, std::vector<int> ID_list)
+void ftServo::init(const char *serial, int num_servos, rclcpp::Node::SharedPtr &nh, std::vector<int> ID_list)
 {
     nh_ = nh;
     num = num_servos;
@@ -43,7 +47,10 @@ void ftServo::init(const char *serial, int num_servos, ros::NodeHandle &nh, std:
     current_speed.resize(num);
     std::fill(target_angle.begin(), target_angle.end(), 180.0);
     std::fill(current_speed.begin(), current_speed.end(), 2400);
-    // update_timer = nh_.createTimer(ros::Duration(0.025), &ftServo::update_servo_state, this);
+    // update_timer = nh_->create_wall_timer(
+    //     std::chrono::milliseconds(25),
+    //     std::bind(&YourClassName::update_servo_state, this));
+    RCLCPP_INFO(nh->get_logger(), "Init FEETECHservo");
 }
 
 void ftServo::move(double angle, int id, double speed)
@@ -52,7 +59,7 @@ void ftServo::move(double angle, int id, double speed)
     bool sucess = find_id(id, index);
     if (!sucess)
     {
-        ROS_ERROR("Wrong input of id");
+        std::cout << "Wrong input of id" << std::endl;
         return;
     }
     target_angle[index] = angle;
@@ -68,7 +75,7 @@ double ftServo::read(int id)
     bool sucess = find_id(id, index);
     if (!sucess)
     {
-        ROS_ERROR("Wrong input of id");
+        std::cout << "Wrong input of id" << std::endl;
         return -1;
     }
     int step = sm_st.ReadPos(id);
@@ -79,7 +86,7 @@ double ftServo::read(int id)
     }
     else
     {
-        ROS_ERROR("read pos err");
+        std::cout << "read pos err" << std::endl;
     }
     return Pos;
 }
@@ -90,11 +97,11 @@ void ftServo::reset(int id)
     bool sucess = find_id(id, index);
     if (!sucess)
     {
-        ROS_ERROR("Wrong input of id");
+        std::cout << "Wrong input of id" << std::endl;
         return;
     }
     sm_st.CalibrationOfs(id);
-    ROS_INFO("Reset to 180 deg");
+    std::cout << "Reset to 180 deg" << std::endl;
 }
 
 void ftServo::rename(int id, int modified_id)
@@ -103,7 +110,7 @@ void ftServo::rename(int id, int modified_id)
     bool sucess = find_id(id, index);
     if (!sucess)
     {
-        ROS_ERROR("Wrong input of id");
+        std::cout << "Wrong input of id" << std::endl;        
         return;
     }
 
@@ -113,7 +120,7 @@ void ftServo::rename(int id, int modified_id)
     sm_st.LockEprom(modified_id);
 }
 
-void ftServo::update_servo_state(const ros::TimerEvent &)
+void ftServo::update_servo_state()
 {
 
     for (int i = 0; i < num; i++)
@@ -147,18 +154,18 @@ bool ftServo::ping(int id)
     bool sucess = find_id(id, index);
     if (!sucess)
     {
-        ROS_ERROR("Wrong input of id");
+        std::cout << "Wrong input of id" << std::endl;
         return false;
     }
     int ID = sm_st.Ping(id);
     if (ID != -1)
     {
-        ROS_INFO("ID:%i", ID);
+        std::cout << "ID:"<< ID << std::endl;
         return true;
     }
     else
     {
-        ROS_WARN("Ping ID wrong");
+        std::cout << "Ping ID wrong" << std::endl;
         return false;
     }
 }

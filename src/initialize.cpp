@@ -10,20 +10,20 @@
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "initialize");
-	ros::NodeHandle nh;
+	rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("initialize");
 	int modified_id ;
 	const char *_serial;
 	std::string serial_string;
-	nh.param("/initialize/ftservo/id", modified_id, 1);
-	nh.param("/initialize/ftservo/serial", serial_string, std::string("/dev/ttyUSB0"));
-	std::cout<<modified_id<<std::endl;
+	node->declare_parameter<int>("/initialize/ftservo/id", 1);
+    node->declare_parameter<std::string>("/initialize/ftservo/serial", "/dev/ttyUSB0");
+	modified_id = node->get_parameter("/initialize/ftservo/id").as_int();
+    serial_string = node->get_parameter("/initialize/ftservo/serial").as_string();
+    RCLCPP_INFO(node->get_logger(), "%d", modified_id);
 	_serial = serial_string.c_str();
 	ftServo _servo;
-	std::vector<int> ID_list = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-	_servo.init(_serial, 17, nh, ID_list);
-	_servo.ping(-1);
-	_servo.ping(0);
+	std::vector<int> ID_list = {1, 2, 3, 4, 5, 6, 7, 8};
+	_servo.init(_serial, 8, node, ID_list);
 	_servo.ping(1);
 	_servo.ping(2);
 	_servo.ping(3);
@@ -32,17 +32,11 @@ int main(int argc, char **argv)
 	_servo.ping(6);
 	_servo.ping(7);
 	_servo.ping(8);
-	_servo.ping(9);
-	_servo.ping(10);
-	_servo.ping(11);
-	_servo.ping(12);
-	_servo.ping(13);
-	_servo.ping(14);
-	_servo.ping(15);
 	
 	_servo.rename(1, modified_id);
 	_servo.reset(modified_id);
 	_servo.ping(1);
-	ROS_INFO("Modification completed. The modified ID is: %d", modified_id);
+	RCLCPP_INFO(node->get_logger(), "Modification completed. The modified ID is: %d", modified_id);
+    rclcpp::shutdown();
 	return 0;
 }
