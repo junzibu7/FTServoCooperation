@@ -1,7 +1,7 @@
 //
 // Created by hzj on 24-2-28.
 //
-#include "ftservoControl/math_tools.h"
+#include "ftservocontrol/math_tools.h"
 
 
 /**
@@ -104,7 +104,7 @@ double vectorAngle(Eigen::Vector2d& vec1, Eigen::Vector2d& vec2, int method) {
     // 使用acos函数计算夹角 
     if (method == 0) {
         return acos(dotProduct / (norm1 * norm2));//以弧度为单位
-    }else if(method == 1){
+    }else{//method == 1
         return acos(dotProduct / (norm1 * norm2)) * 180.0 / 3.1415926;
     }
       

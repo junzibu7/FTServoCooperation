@@ -3,7 +3,7 @@
  * @Date: 2024-02-28 11:53:27
  * @LastEditors: 黄先 1215399660@qq.com
  * @LastEditTime: 2024-02-28 20:56:57
- * @FilePath: /test_ws/src/ftservoControl/README.md
+ * @FilePath: /test_ws/src/ftservocontrol/README.md
  * @Description: readme 
 -->
 
@@ -16,7 +16,7 @@
   2. 将初始的舵机编号设置为`modified_id`，注意，如果原来的舵机编号不是1，则这个initialize不会起作用，若如此，请修改`initialize.cpp`中`_servo.rename(1, modified_id);`的`1`至当前舵机的编号。
   
 ```
-roslaunch ftservoControl initial.launch
+roslaunch ftservocontrol initial.launch
 ```
 
 ## 快速使用
@@ -41,7 +41,7 @@ source devel/setup.bash
 ```
 4. 初始化舵机，注意此时只能连接一个*未初始化*的舵机
 ```
-roslaunch ftservoControl initial.launch
+roslaunch ftservocontrol initial.launch
 ```
 5. 测试舵机转动，注意此时只能连接刚刚初始化的舵机
 新开一个终端
@@ -50,7 +50,7 @@ roscore
 ```
 再在原来的终端里运行
 ```
-rosrun ftservoControl WritePos
+rosrun ftservocontrol WritePos
 ```
 6. 如果报错permission denied，检查是否有/dev/ttyUSB0这个接口
 ```
@@ -63,12 +63,12 @@ sudo chmod 777 /dev/ttyUSB0
 如果没有则将initize.launch中的port改为你能找到的/dev/ttyUSBX
 之后重新运行
 ```
-roslaunch ftservoControl initial.launch
+roslaunch ftservocontrol initial.launch
 ```
 ## 使用方法
-- 在项目的Cmakelist.txt中添加这个库`ftservoControl`，并且`include`头文件
+- 在项目的Cmakelist.txt中添加这个库`ftservocontrol`，并且`include`头文件
 ```
-#include <ftservoControl/FEETECHservo.h>
+#include <ftservocontrol/FEETECHservo.h>
 ```
 - 直接使用类ftservo，各个函数的功能可以看注释，提供了类似读取，写入，初始化等等的函数。
 - 具体的example可见WritePos.cpp之中

@@ -1,0 +1,6 @@
+{
+  "package_name": "ftservocontrol",
+  "non_idl_tuples": [
+    "/home/cius/foxy_ws/src/ftservocontrol:msg/Landmark.msg"
+  ]
+}

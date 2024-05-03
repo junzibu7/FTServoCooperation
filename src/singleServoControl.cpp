@@ -1,194 +1,156 @@
-#include <ftservoControl/FEETECHservo.h>
-#include <ftservoControl/math_tools.h>
-#include <math.h>
-#include <chrono>
-
-#include <tf2/LinearMath/Transform.h>
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_ros/transform_broadcaster.h>
-#include <tf2_ros/transform_listener.h>
-#include <tf2_eigen/tf2_eigen.h>
-#include <tf2_ros/buffer.h>
-
-#include <Eigen/Eigen>
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
-
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-#include <geometry_msgs/msg/quaternion_stamped.hpp>
-#include <geometry_msgs/msg/vector3.hpp>
-#include <geometry_msgs/msg/quaternion.hpp>
-#include <geometry_msgs/msg/point_stamped.hpp>
+#include <ftservocontrol/singleServoControl.h>
 
 
-double x, y, z;
 using namespace std;
 
-bool flag = false;
-int id_up;
-int id_down;
-double up_status = 225.0;
-double down_status = 180.0;
-double down_change = 0;
-double up_change = 0;
-string source_frame;
-string target_frame;
-string cam;
-string serial_str;
-
-Eigen::Matrix4Xd T01 = Eigen::Matrix4d::Identity();
-Eigen::Matrix4Xd T12 = Eigen::Matrix4d::Identity();
-Eigen::Matrix4Xd T23 = Eigen::Matrix4d::Identity();
-Eigen::Matrix4Xd T34 = Eigen::Matrix4d::Identity();
-Eigen::Matrix4Xd T_servogroup_to_cam = Eigen::Matrix4d::Identity();
-Eigen::Matrix4Xd T_cam_to_coopestimation = Eigen::Matrix4d::Identity();
-Eigen::Matrix4Xd T_cam_to_estimation = Eigen::Matrix4d::Identity();
-
-rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr pub_servogroup_to_cam;
-rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_estimation;
-rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_coopestimation;
-
-tf2::Stamped<tf2::Transform> servogroup_to_cam;
-tf2::Stamped<tf2::Transform> cam_to_estimation;
-tf2::Stamped<tf2::Transform> cam_to_coopestimation;
-geometry_msgs::msg::TransformStamped msg_servogroup_to_cam;
-
-void T_servogroup_to_camera(double id_down, double id_up){
-	T01 << cos(id_down), sin(id_down), 0, 0, -sin(id_down), cos(id_down), 0, 0, 0, 0, 1, 38.3/1000, 0, 0, 0, 1;
-	T12 << 1, 0, 0, 0, 0, 0, 1, 21.3 / 1000, 0, -1, 0, 39.6 / 1000, 0, 0, 0, 1;
-	T23 << cos(id_up), sin(id_up), 0, 0, -sin(id_up), cos(id_up), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
-	T34 << 1, 0, 0, 9.36 / 1000, 0, 0, -1, -59 / 1000, 0, 1, 0, 26 / 1000, 0, 0, 0, 1;
-	Eigen::Matrix4d T_correct = Eigen::Matrix4d::Identity();
-	T_servogroup_to_cam = T01 * T12 * T23 * T34;
-	
-}
-
-void T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped &msg){
-	cam_to_estimation.setOrigin(tf2::Vector3(msg.transform.translation.x, msg.transform.translation.y, msg.transform.translation.z));
-	cam_to_estimation.setRotation(tf2::Quaternion(msg.transform.rotation.x, msg.transform.rotation.y, msg.transform.rotation.z, msg.transform.rotation.w));
-	flag = true;
-}
-
-
-int main(int argc, char **argv)
+SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 {
-    rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("singleServoControl");
-    
-	tf2_ros::TransformBroadcaster br(node);
-	tf2_ros::Buffer tfBuffer(node->get_clock());
-	tf2_ros::TransformListener tfListener(tfBuffer);
-	// geometry_msgs::TransformStamped transformStamped;
+	// Basic Parameters
+	this->declare_parameter<int>("id_down", 1);
+	this->declare_parameter<int>("id_up", 2);
+	this->declare_parameter<std::string>("target_frame", "EstimationfromcamA");
+	this->declare_parameter<std::string>("source_frame", "camA");
+	this->declare_parameter<std::string>("cam", "camA"); 
+	this->declare_parameter<std::string>("serial", "/dev/ttyUSB0");
 
-    node->declare_parameter<int>("singleServoControl/id_up", 4);
-    node->declare_parameter<int>("singleServoControl/id_down", 3);
-    node->declare_parameter<std::string>("singleServoControl/target_frame", "EstimationfromcamA");
-    node->declare_parameter<std::string>("singleServoControl/source_frame", "camA");
+	id_up = this->get_parameter("id_up").as_int();
+	id_down = this->get_parameter("id_down").as_int();
+	target_frame = this->get_parameter("target_frame").as_string();
+	source_frame = this->get_parameter("source_frame").as_string();
+	cam = this->get_parameter("cam").as_string();
+	serial_str = this->get_parameter("serial").as_string();
 
-    int id_up = node->get_parameter("singleServoControl/id_up").as_int();
-    int id_down = node->get_parameter("singleServoControl/id_down").as_int();
-    std::string target_frame = node->get_parameter("singleServoControl/target_frame").as_string();
-    std::string source_frame = node->get_parameter("singleServoControl/source_frame").as_string();
-	node->declare_parameter<std::string>("singleServoControl/cam", "camA");
-    node->declare_parameter<std::string>("singleServoControl/serial", "/dev/ttyUSB1");
+	cout << "id_up:" << id_up << endl;
+	cout << "id_down:" << id_down << endl;
+	cout << "serial:" << serial_str << endl;	
 
-    std::string cam = node->get_parameter("singleServoControl/cam").as_string();
-    std::string serial_str = node->get_parameter("singleServoControl/serial").as_string();
-    const char *serial_ = serial_str.c_str();
+	// System Initialization
+	pub_servogroup_to_cam = this->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
+	// sub_irlandmark = this->create_subscription<ftservocontrol::msg::landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 1, std::bind(&SingleServoNode::target_center_callback, this, _1));
 
-    ftServo _servo;
+	cout << "System has been initialized!" << endl;
+}
 
-    rclcpp::Rate rate(30);
-
-    _servo.init(serial_, 2, node, {id_down, id_up});
-    _servo.move(down_status, id_down);
-    std::cout << "down_status:" << down_status << std::endl;
-    _servo.move(up_status, id_up);
-    std::cout << "up_status:" << up_status << std::endl;
-
-    std::cout << "system has been initialized!" << std::endl;
-    pub_servogroup_to_cam = node->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
-	auto start = std::chrono::high_resolution_clock::now();
-  	
-	std::cout << _servo.read(id_up) << std::endl;
-	std::cout << _servo.read(id_down) << std::endl;
+void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
+{
+	nh = nh_;
 	
-	auto end = std::chrono::high_resolution_clock::now();
-	// 计算差值
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    
-    // 输出运行时间
-    std::cout << "Code execution time: " << duration.count() << " milliseconds" << std::endl;
+	const char *serial_ = serial_str.c_str();
+	
+	// Servo Initialization
+	_servo.init(serial_, 2, nh, {id_down, id_up});
 
-	while (rclcpp::ok())
-    {
-        // // Calculate the transformation from the motor group to the camera
-        // T_servogroup_to_camera((down_status - 180) / 180 * pi, (up_status - 180) / 180 * pi);
+	// Move the servo to the initial position
+	// servo_move(down_status_init, up_status_init);
 
-        // std::cout << "T_servogroup_to_cam" << std::endl << T_servogroup_to_cam << std::endl;
-        // servogroup_to_cam.setOrigin(EigenVector3dToTFVector3(T_servogroup_to_cam.block<3,1>(0,3)));
-        // servogroup_to_cam.setRotation(EigenQuaterniondToTFQuaternion(Eigen::Quaterniond(T_servogroup_to_cam.block<3,3>(0,0))));
-        // servogroup_to_cam.stamp_ = node->now();
-        // servogroup_to_cam.frame_id_ = "servogroup" + std::to_string(id_down) + std::to_string(id_up);
-        // servogroup_to_cam.child_frame_id_ = cam;
-        // tf2::toMsg(servogroup_to_cam, msg_servogroup_to_cam);
-        // pub_servogroup_to_cam->publish(msg_servogroup_to_cam);
-        // br.sendTransform(msg_servogroup_to_cam);
+	// std::this_thread::sleep_for(1s);
 
-		// if(flag == false)
-		// 	try{
-		// 		// 等待变换
-		// 		lr.waitForTransform(target_frame, "CoopEstimation", ros::Time(0), ros::Duration(1.0));
-		// 		// 查询坐标系关系
-		// 		lr.lookupTransform(target_frame, "CoopEstimation", ros::Time(0), cam_to_estimation);
+	// down_status = _servo.read(id_down);
+	// up_status = _servo.read(id_up);
 
-		// 		flag = true;
+	// cout << "down_status:" << down_status << endl;
+	// cout << "up_status:" << up_status << endl;
+}
 
-		// 	}
-		// 	catch(tf::TransformException &ex)
-		// 	{
-		// 		RCLCPP_ERROR(this->get_logger(), "%s", ex.what());
-		// 	}
-
-
-		// if(flag){
-			// x = cam_to_estimation.getOrigin().x();
-			// y = cam_to_estimation.getOrigin().y();
-			// z = cam_to_estimation.getOrigin().z();
-			// std::cout <<"(TF_cam_to_estimation)  x:"<< x <<"y:"<< y <<"z:"<< z << std::endl;
-			
-			//下方舵机旋转
-			// if(y <= 0)
-			// {
-			// 	down_change = abs( atan(y / x) / pi * 180) ;//左负右正
-			// }else if(y > 0)
-			// {
-			// 	down_change = -abs( atan(y / x) / pi * 180) ;//左负右正
-			// }
-			// down_status = down_change + down_status;
-			// // down_status = (abs(down_change) > 2) * down_change + down_status;
-			// down_status = min(max(down_status, 50.0), 310.0);
-			// _servo.move(down_status,id_down);
-			// std::cout<<"down moving angle:"<<down_change<<std::endl;
-			// std::cout<<"down angle:"<<down_status<<std::endl;
-
-			// //上方舵机旋转
-			// double up_change = atan(z / sqrt(x * x + y * y)) / pi * 180 / 2;//上正下负
-			// up_status = up_change + up_status;
-			// // up_status = (abs(up_change) > 3) * up_change + up_status;
-			// up_status = min(max(up_status, 135.0), 225.0);
-			// _servo.move(up_status,id_up);	
-			// std::cout<<"up moving angle:"<<up_change<<std::endl;
-			// std::cout<<"up angle:"<<up_status<<std::endl;
-			// flag = false;
-		// }
-		// ros::Duration(1).sleep();
-		rclcpp::spin_some(node);
-		rate.sleep();
-
-		
+void SingleServoNode::servo_move(double target_down_status, double target_up_status)
+{
+	// Move the down servo to the target position
+	if ((target_down_status > down_status_max) )
+	{
+		_servo.move(down_status_max, id_down);
+		RCLCPP_ERROR(nh->get_logger(), "The target position of the down servo is out of range!");
 	}
+	else if((target_down_status < down_status_min))
+	{
+		_servo.move(down_status_min, id_down);
+		RCLCPP_ERROR(nh->get_logger(), "The target position of the down servo is out of range!");
+	}
+	else
+	{
+		_servo.move(target_down_status, id_down);
+	}
+
+	// Move the up servo to the target position
+	if ((target_up_status > up_status_max) )
+	{
+		_servo.move(up_status_max, id_up);
+		RCLCPP_ERROR(nh->get_logger(), "The target position of the up servo is out of range!");
+	}
+	else if((target_up_status < up_status_min))
+	{
+		_servo.move(up_status_min, id_up);
+		RCLCPP_ERROR(nh->get_logger(), "The target position of the up servo is out of range!");
+	}
+	else
+	{
+		_servo.move(target_up_status, id_up);
+	}
+}
+
+void SingleServoNode::T_servogroup_to_camera(){
+	down_status = _servo.read(id_down);
+	up_status = _servo.read(id_up);
+
+	// cout << "down_status:" << down_status << endl;
+	// cout << "up_status:" << up_status << endl;
+
+	down_change = (down_status - down_status_init) * M_PI / 180;
+	up_change = (up_status - up_status_init) * M_PI / 180;
+
+	// cout << "down_change:" << down_change / M_PI * 180 << endl;
+	// cout << "up_change:" << up_change / M_PI * 180 << endl;
+
+	// Servo down to up
+	T_DU << cos(down_change), sin(down_change), 0, 0, - sin(down_change), cos(down_change), 0, 0, 0, 0, 1, 40.72/1000, 0, 0, 0, 1;
+	// Servo up to Bracket
+	T_UB << cos(up_change), 0, -sin(up_change), 0, 0, 1, 0, 0, sin(up_change), 0, cos(up_change), 39.60/1000, 0, 0, 0, 1;
+	// Bracket to Camera
+	T_BC << 1, 0, 0, (-11 + 15) / 10000, 0, 1, 0, (26.25 + 17 + 4.22) / 1000, 0, 0, 1, 66.5 / 1000, 0, 0, 0, 1;
+
+	// Transformation from the servo group to the camera
+	T_servogroup_to_cam = T_DU * T_UB * T_BC;
+
+	// cout << T_servogroup_to_cam << endl;
 	
-	return 0;
+}
+
+void SingleServoNode::T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped &msg){
+	// Get the transformation from the camera to the estimation
+	target_t_x = msg.transform.translation.x;
+	target_t_y = msg.transform.translation.y;
+	target_t_z = msg.transform.translation.z;
+	target_q_x = msg.transform.rotation.x;
+	target_q_y = msg.transform.rotation.y;
+	target_q_z = msg.transform.rotation.z;
+	target_q_w = msg.transform.rotation.w;
+
+	// Transformation from the camera to the estimation
+	cam_to_estimation.setOrigin(tf2::Vector3(target_t_x, target_t_y, target_t_z));
+	cam_to_estimation.setRotation(tf2::Quaternion(target_q_x, target_q_y, target_q_z, target_q_w));
+}
+
+void SingleServoNode::T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped &msg){
+	// Get the transformation from the camera to the estimation
+	target_t_x = msg.transform.translation.x;
+	target_t_y = msg.transform.translation.y;
+	target_t_z = msg.transform.translation.z;
+	target_q_x = msg.transform.rotation.x;
+	target_q_y = msg.transform.rotation.y;
+	target_q_z = msg.transform.rotation.z;
+	target_q_w = msg.transform.rotation.w;
+
+	// Transformation from the camera to the estimation
+	cam_to_coopestimation.setOrigin(tf2::Vector3(target_t_x, target_t_y, target_t_z));
+	cam_to_coopestimation.setRotation(tf2::Quaternion(target_q_x, target_q_y, target_q_z, target_q_w));
+}
+
+void SingleServoNode::target_center_callback(const msgs::msg::Landmark &msg){
+	// Initialize the target center
+	target_center = cv::Point2f(0, 0);
+
+	// Get the target center
+	for (unsigned int i = 0; i < msg.x.size(); i++){
+		target_center.x += msg.x[i] / msg.x.size();
+		target_center.y += msg.y[i] / msg.y.size();
+	}
 }

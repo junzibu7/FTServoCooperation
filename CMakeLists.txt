@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.25.2)
-project(ftservoControl)
+project(ftservocontrol)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -35,46 +35,46 @@ if($ENV{ROS_VERSION} EQUAL 1)
 
   catkin_package(ServoControl
     INCLUDE_DIRS include 
-    LIBRARIES ftservoControl
+    LIBRARIES ftservocontrol
     CATKIN_DEPENDS roscpp rospy std_msgs tf cv_bridge
   )
 
-  add_library(ftservoControl src/FEETECHservo.cpp)
+  add_library(ftservocontrol src/FEETECHservo.cpp)
   add_library(math_tools_lib src/math_tools.cpp)
 
-  target_link_libraries(ftservoControl
+  target_link_libraries(ftservocontrol
     ${catkin_LIBRARIES} 
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )  
   add_executable(WritePos src/WritePos.cpp)
   target_link_libraries(WritePos
     ${catkin_LIBRARIES}
-    ftservoControl
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+    ftservocontrol
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
   add_dependencies(WritePos ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
   # add_executable(servoControl src/servoControl.cpp)
   # target_link_libraries(servoControl
   #   ${catkin_LIBRARIES}
-  #   ${PROJECT_SOURCE_DIR}/include/ftservoControl/libSCServo.a
+  #   ${PROJECT_SOURCE_DIR}/include/ftservocontrol/libSCServo.a
   #  )
   # add_dependencies(servoControl ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
   add_executable(initialize src/initialize.cpp)
   target_link_libraries(initialize
     ${catkin_LIBRARIES}
-    ftservoControl
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+    ftservocontrol
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
   add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
   add_executable(singleServoControl src/singleServoControl.cpp)
   target_link_libraries(singleServoControl
     ${catkin_LIBRARIES}
-    ftservoControl
+    ftservocontrol
     math_tools_lib
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.so #x86
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
   add_dependencies(initialize ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -92,6 +92,8 @@ else()
   find_package(cv_bridge REQUIRED)
   find_package(OpenCV 4.2.0 REQUIRED)
   find_package(Eigen3 REQUIRED)
+  find_package(rosidl_default_generators REQUIRED)
+  find_package(msgs REQUIRED)
 
   include_directories(
     include
@@ -101,8 +103,8 @@ else()
   )
   add_definitions(${EIGEN_DEFINITIONS})
 
-  add_library(ftservoControl SHARED src/FEETECHservo.cpp)
-  ament_target_dependencies(ftservoControl
+  add_library(ftservo_Control SHARED src/FEETECHservo.cpp)
+  ament_target_dependencies(ftservo_Control
     rclcpp
     std_msgs
     tf2
@@ -121,35 +123,61 @@ else()
     tf2_ros
   )
 
+  add_library(singleServoControl SHARED src/singleServoControl.cpp)
+  ament_target_dependencies(singleServoControl
+    rclcpp
+    std_msgs
+    tf2
+    cv_bridge
+    geometry_msgs
+    tf2_ros
+    msgs
+  )
+  target_link_libraries(singleServoControl
+    ftservo_Control
+    math_tools_lib
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
+  )
+
   add_executable(WritePos src/WritePos.cpp)
   ament_target_dependencies(WritePos rclcpp std_msgs tf2 cv_bridge)
   target_link_libraries(WritePos
-    ftservoControl
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.a #x86
+    ftservo_Control
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
 
   add_executable(initialize src/initialize.cpp)
   ament_target_dependencies(initialize rclcpp std_msgs tf2 cv_bridge)
   target_link_libraries(initialize
-    ftservoControl
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.a #x86
+    ftservo_Control
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
 
-  add_executable(singleServoControl src/singleServoControl.cpp)
-  ament_target_dependencies(singleServoControl rclcpp std_msgs tf2 cv_bridge)
-  target_link_libraries(singleServoControl
-    ftservoControl
-    math_tools_lib
-    ${PROJECT_SOURCE_DIR}/include/ftservoControl/lib_x86/libSCServo.a #x86
+  add_executable(Multi_Servogp_Control src/Multi_Servogp_Control.cpp)
+  ament_target_dependencies(Multi_Servogp_Control rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(Multi_Servogp_Control
+    singleServoControl
+  )
+
+  # rosidl_get_typesupport_target(cpp_typesupport_target
+  #   ${PROJECT_NAME} rosidl_typesupport_cpp)
+ 
+  # target_link_libraries(singleServoControl "${cpp_typesupport_target}")
+
+
+  install(
+    DIRECTORY include/SCServo/lib_x86/
+    DESTINATION lib
   )
 
   install(TARGETS 
     singleServoControl
-    ftservoControl
+    ftservo_Control
     math_tools_lib
     WritePos
     initialize
-    DESTINATION lib/${PROJECT_NAME}
+    Multi_Servogp_Control
+    RUNTIME DESTINATION lib/${PROJECT_NAME}
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
   )
 

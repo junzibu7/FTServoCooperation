@@ -3,10 +3,10 @@
  * @Date: 2024-02-28 09:36:03
  * @LastEditors: 黄先 1215399660@qq.com
  * @LastEditTime: 2024-02-28 21:02:17
- * @FilePath: /test_ws/src/ftservoControl/src/WritePos.cpp
+ * @FilePath: /test_ws/src/ftservocontrol/src/WritePos.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-#include <ftservoControl/FEETECHservo.h>
+#include <ftservocontrol/FEETECHservo.h>
 
 int main(int argc, char **argv)
 {

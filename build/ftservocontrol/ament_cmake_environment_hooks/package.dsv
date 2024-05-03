@@ -1,0 +1,4 @@
+source;share/ftservocontrol/local_setup.bash
+source;share/ftservocontrol/local_setup.dsv
+source;share/ftservocontrol/local_setup.sh
+source;share/ftservocontrol/local_setup.zsh

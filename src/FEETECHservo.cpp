@@ -3,10 +3,10 @@
  * @Date: 2024-02-28 09:40:07
  * @LastEditors: 黄先 1215399660@qq.com
  * @LastEditTime: 2024-02-28 20:38:34
- * @FilePath: /test_ws/src/ftservoControl/src/FEETECHservo.cpp
+ * @FilePath: /test_ws/src/ftservocontrol/src/FEETECHservo.cpp
  * @Description: API for FEETECHServo contol
  */
-#include <ftservoControl/FEETECHservo.h>
+#include <ftservocontrol/FEETECHservo.h>
 
 void ftServo::init(const char *serial, int num_servos, rclcpp::Node::SharedPtr &nh)
 {
