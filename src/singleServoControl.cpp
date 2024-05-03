@@ -105,7 +105,7 @@ void SingleServoNode::T_servogroup_to_camera(){
 	// Servo up to Bracket
 	T_UB << cos(up_change), 0, -sin(up_change), 0, 0, 1, 0, 0, sin(up_change), 0, cos(up_change), 39.60/1000, 0, 0, 0, 1;
 	// Bracket to Camera
-	T_BC << 1, 0, 0, (-11 + 15) / 10000, 0, 1, 0, (26.25 + 17 + 4.22) / 1000, 0, 0, 1, 66.5 / 1000, 0, 0, 0, 1;
+	T_BC << 1, 0, 0, (-11 + 15) / 1000, 0, 1, 0, (26.25 + 17 + 4.22) / 1000, 0, 0, 1, 66.5 / 1000, 0, 0, 0, 1;
 
 	// Transformation from the servo group to the camera
 	T_servogroup_to_cam = T_DU * T_UB * T_BC;
