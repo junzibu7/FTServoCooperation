@@ -47,6 +47,7 @@
 #include <sstream>
 
 #include <msgs/msg/landmark.hpp>
+#include <msgs/msg/loss.hpp>
 
 
 using namespace std::chrono_literals;
@@ -86,6 +87,7 @@ public:
 	double target_q_z = 0;
 	double target_q_w = 0;
     cv::Point2f target_center = cv::Point2f(0, 0);
+	msgs::msg::Loss target_loss_msg;
 
 	//Servo Transforms
 	Eigen::Matrix4Xd T_DU = Eigen::Matrix4d::Identity();
@@ -98,6 +100,7 @@ public:
 	//Publishers and Subscribers
 	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr pub_servogroup_to_cam;
+	rclcpp::Publisher<msgs::msg::Loss>::SharedPtr pub_target_loss;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_estimation;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_coopestimation;
 	rclcpp::Subscription<msgs::msg::Landmark>::SharedPtr sub_irlandmark;

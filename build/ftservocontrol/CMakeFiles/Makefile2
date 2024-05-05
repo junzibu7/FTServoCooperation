@@ -63,70 +63,32 @@ CMAKE_BINARY_DIR = /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/ftservocontrol.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/all
-all: CMakeFiles/ftservocontrol__python.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all
-all: CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all
 all: CMakeFiles/ftservo_Control.dir/all
 all: CMakeFiles/math_tools_lib.dir/all
 all: CMakeFiles/singleServoControl.dir/all
+all: CMakeFiles/multiServoControl.dir/all
 all: CMakeFiles/WritePos.dir/all
 all: CMakeFiles/initialize.dir/all
+all: CMakeFiles/Single_Servogp_Control.dir/all
 all: CMakeFiles/Multi_Servogp_Control.dir/all
-all: ftservocontrol__py/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
-preinstall: ftservocontrol__py/preinstall
+preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
 clean: CMakeFiles/uninstall.dir/clean
 clean: CMakeFiles/ftservocontrol_uninstall.dir/clean
-clean: CMakeFiles/ftservocontrol.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/clean
-clean: CMakeFiles/ftservocontrol__cpp.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/clean
-clean: CMakeFiles/ftservocontrol__python.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/clean
-clean: CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/clean
 clean: CMakeFiles/ftservo_Control.dir/clean
 clean: CMakeFiles/math_tools_lib.dir/clean
 clean: CMakeFiles/singleServoControl.dir/clean
+clean: CMakeFiles/multiServoControl.dir/clean
 clean: CMakeFiles/WritePos.dir/clean
 clean: CMakeFiles/initialize.dir/clean
+clean: CMakeFiles/Single_Servogp_Control.dir/clean
 clean: CMakeFiles/Multi_Servogp_Control.dir/clean
-clean: ftservocontrol__py/clean
 .PHONY : clean
-
-#=============================================================================
-# Directory level rules for directory ftservocontrol__py
-
-# Recursive "all" directory target.
-ftservocontrol__py/all:
-.PHONY : ftservocontrol__py/all
-
-# Recursive "preinstall" directory target.
-ftservocontrol__py/preinstall:
-.PHONY : ftservocontrol__py/preinstall
-
-# Recursive "clean" directory target.
-ftservocontrol__py/clean: ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/clean
-.PHONY : ftservocontrol__py/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/uninstall.dir
@@ -181,378 +143,13 @@ CMakeFiles/ftservocontrol_uninstall.dir/clean:
 .PHONY : CMakeFiles/ftservocontrol_uninstall.dir/clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__cpp.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/all
-CMakeFiles/ftservocontrol.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol.dir/build.make CMakeFiles/ftservocontrol.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol.dir/build.make CMakeFiles/ftservocontrol.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num= "Built target ftservocontrol"
-.PHONY : CMakeFiles/ftservocontrol.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 22
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol.dir/rule
-
-# Convenience name for target.
-ftservocontrol: CMakeFiles/ftservocontrol.dir/rule
-.PHONY : ftservocontrol
-
-# clean rule for target.
-CMakeFiles/ftservocontrol.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol.dir/build.make CMakeFiles/ftservocontrol.dir/clean
-.PHONY : CMakeFiles/ftservocontrol.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_generator_c.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_generator_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_generator_c.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_generator_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_generator_c.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=11,12,13 "Built target ftservocontrol__rosidl_generator_c"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_generator_c.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 3
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_generator_c.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_generator_c: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/rule
-.PHONY : ftservocontrol__rosidl_generator_c
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_generator_c.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_generator_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_generator_c.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_generator_c.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all: CMakeFiles/ftservocontrol__cpp.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=22,23,24 "Built target ftservocontrol__rosidl_typesupport_fastrtps_c"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 10
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_fastrtps_c: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_fastrtps_c
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all: CMakeFiles/ftservocontrol__cpp.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=27,28,29 "Built target ftservocontrol__rosidl_typesupport_fastrtps_cpp"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 4
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_fastrtps_cpp: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_fastrtps_cpp
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=30,31,32 "Built target ftservocontrol__rosidl_typesupport_introspection_c"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_introspection_c: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_introspection_c
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=14,15,16 "Built target ftservocontrol__rosidl_typesupport_c"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_c: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_c
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__cpp.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__cpp.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__cpp.dir/build.make CMakeFiles/ftservocontrol__cpp.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__cpp.dir/build.make CMakeFiles/ftservocontrol__cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=7 "Built target ftservocontrol__cpp"
-.PHONY : CMakeFiles/ftservocontrol__cpp.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 1
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__cpp.dir/rule
-
-# Convenience name for target.
-ftservocontrol__cpp: CMakeFiles/ftservocontrol__cpp.dir/rule
-.PHONY : ftservocontrol__cpp
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__cpp.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__cpp.dir/build.make CMakeFiles/ftservocontrol__cpp.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__cpp.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/all: CMakeFiles/ftservocontrol__cpp.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=35,36,37 "Built target ftservocontrol__rosidl_typesupport_introspection_cpp"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 4
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_introspection_cpp: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_introspection_cpp
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_cpp.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/all: CMakeFiles/ftservocontrol__cpp.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=19,20,21 "Built target ftservocontrol__rosidl_typesupport_cpp"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 4
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_cpp: CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_cpp
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_cpp.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__python.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__python.dir/all: CMakeFiles/ftservocontrol.dir/all
-CMakeFiles/ftservocontrol__python.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-CMakeFiles/ftservocontrol__python.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-CMakeFiles/ftservocontrol__python.dir/all: ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__python.dir/build.make CMakeFiles/ftservocontrol__python.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__python.dir/build.make CMakeFiles/ftservocontrol__python.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=9,10 "Built target ftservocontrol__python"
-.PHONY : CMakeFiles/ftservocontrol__python.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__python.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 25
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__python.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__python.dir/rule
-
-# Convenience name for target.
-ftservocontrol__python: CMakeFiles/ftservocontrol__python.dir/rule
-.PHONY : ftservocontrol__python
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__python.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__python.dir/build.make CMakeFiles/ftservocontrol__python.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__python.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: CMakeFiles/ftservocontrol.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_cpp.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: CMakeFiles/ftservocontrol__python.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all: ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=25,26 "Built target ftservocontrol__rosidl_typesupport_fastrtps_c__pyext"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 27
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_fastrtps_c__pyext: CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_fastrtps_c__pyext
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_fastrtps_c__pyext.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all: CMakeFiles/ftservocontrol.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all: CMakeFiles/ftservocontrol__python.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all: ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=33,34 "Built target ftservocontrol__rosidl_typesupport_introspection_c__pyext"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 27
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_introspection_c__pyext: CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_introspection_c__pyext
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_introspection_c__pyext.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir
-
-# All Build rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all: CMakeFiles/ftservocontrol.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_generator_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all: CMakeFiles/ftservocontrol__rosidl_typesupport_c.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all: CMakeFiles/ftservocontrol__python.dir/all
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all: ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=17,18 "Built target ftservocontrol__rosidl_typesupport_c__pyext"
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 27
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/rule
-
-# Convenience name for target.
-ftservocontrol__rosidl_typesupport_c__pyext: CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/rule
-.PHONY : ftservocontrol__rosidl_typesupport_c__pyext
-
-# clean rule for target.
-CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/build.make CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/clean
-.PHONY : CMakeFiles/ftservocontrol__rosidl_typesupport_c__pyext.dir/clean
-
-#=============================================================================
 # Target rules for target CMakeFiles/ftservo_Control.dir
 
 # All Build rule for target.
 CMakeFiles/ftservo_Control.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservo_Control.dir/build.make CMakeFiles/ftservo_Control.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ftservo_Control.dir/build.make CMakeFiles/ftservo_Control.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=5,6 "Built target ftservo_Control"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=7,8 "Built target ftservo_Control"
 .PHONY : CMakeFiles/ftservo_Control.dir/all
 
 # Build rule for subdir invocation for target.
@@ -578,7 +175,7 @@ CMakeFiles/ftservo_Control.dir/clean:
 CMakeFiles/math_tools_lib.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/math_tools_lib.dir/build.make CMakeFiles/math_tools_lib.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/math_tools_lib.dir/build.make CMakeFiles/math_tools_lib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=40,41 "Built target math_tools_lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=11,12 "Built target math_tools_lib"
 .PHONY : CMakeFiles/math_tools_lib.dir/all
 
 # Build rule for subdir invocation for target.
@@ -605,7 +202,7 @@ CMakeFiles/singleServoControl.dir/all: CMakeFiles/ftservo_Control.dir/all
 CMakeFiles/singleServoControl.dir/all: CMakeFiles/math_tools_lib.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/singleServoControl.dir/build.make CMakeFiles/singleServoControl.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/singleServoControl.dir/build.make CMakeFiles/singleServoControl.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=42,43 "Built target singleServoControl"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=15,16 "Built target singleServoControl"
 .PHONY : CMakeFiles/singleServoControl.dir/all
 
 # Build rule for subdir invocation for target.
@@ -625,13 +222,41 @@ CMakeFiles/singleServoControl.dir/clean:
 .PHONY : CMakeFiles/singleServoControl.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/multiServoControl.dir
+
+# All Build rule for target.
+CMakeFiles/multiServoControl.dir/all: CMakeFiles/ftservo_Control.dir/all
+CMakeFiles/multiServoControl.dir/all: CMakeFiles/math_tools_lib.dir/all
+CMakeFiles/multiServoControl.dir/all: CMakeFiles/singleServoControl.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/multiServoControl.dir/build.make CMakeFiles/multiServoControl.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/multiServoControl.dir/build.make CMakeFiles/multiServoControl.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=13,14 "Built target multiServoControl"
+.PHONY : CMakeFiles/multiServoControl.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/multiServoControl.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 8
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/multiServoControl.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
+.PHONY : CMakeFiles/multiServoControl.dir/rule
+
+# Convenience name for target.
+multiServoControl: CMakeFiles/multiServoControl.dir/rule
+.PHONY : multiServoControl
+
+# clean rule for target.
+CMakeFiles/multiServoControl.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/multiServoControl.dir/build.make CMakeFiles/multiServoControl.dir/clean
+.PHONY : CMakeFiles/multiServoControl.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/WritePos.dir
 
 # All Build rule for target.
 CMakeFiles/WritePos.dir/all: CMakeFiles/ftservo_Control.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WritePos.dir/build.make CMakeFiles/WritePos.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/WritePos.dir/build.make CMakeFiles/WritePos.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=3,4 "Built target WritePos"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=5,6 "Built target WritePos"
 .PHONY : CMakeFiles/WritePos.dir/all
 
 # Build rule for subdir invocation for target.
@@ -657,7 +282,7 @@ CMakeFiles/WritePos.dir/clean:
 CMakeFiles/initialize.dir/all: CMakeFiles/ftservo_Control.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/initialize.dir/build.make CMakeFiles/initialize.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/initialize.dir/build.make CMakeFiles/initialize.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=38,39 "Built target initialize"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=9,10 "Built target initialize"
 .PHONY : CMakeFiles/initialize.dir/all
 
 # Build rule for subdir invocation for target.
@@ -677,12 +302,41 @@ CMakeFiles/initialize.dir/clean:
 .PHONY : CMakeFiles/initialize.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/Single_Servogp_Control.dir
+
+# All Build rule for target.
+CMakeFiles/Single_Servogp_Control.dir/all: CMakeFiles/ftservo_Control.dir/all
+CMakeFiles/Single_Servogp_Control.dir/all: CMakeFiles/math_tools_lib.dir/all
+CMakeFiles/Single_Servogp_Control.dir/all: CMakeFiles/singleServoControl.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Single_Servogp_Control.dir/build.make CMakeFiles/Single_Servogp_Control.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Single_Servogp_Control.dir/build.make CMakeFiles/Single_Servogp_Control.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=3,4 "Built target Single_Servogp_Control"
+.PHONY : CMakeFiles/Single_Servogp_Control.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/Single_Servogp_Control.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 8
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Single_Servogp_Control.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
+.PHONY : CMakeFiles/Single_Servogp_Control.dir/rule
+
+# Convenience name for target.
+Single_Servogp_Control: CMakeFiles/Single_Servogp_Control.dir/rule
+.PHONY : Single_Servogp_Control
+
+# clean rule for target.
+CMakeFiles/Single_Servogp_Control.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Single_Servogp_Control.dir/build.make CMakeFiles/Single_Servogp_Control.dir/clean
+.PHONY : CMakeFiles/Single_Servogp_Control.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/Multi_Servogp_Control.dir
 
 # All Build rule for target.
 CMakeFiles/Multi_Servogp_Control.dir/all: CMakeFiles/ftservo_Control.dir/all
 CMakeFiles/Multi_Servogp_Control.dir/all: CMakeFiles/math_tools_lib.dir/all
 CMakeFiles/Multi_Servogp_Control.dir/all: CMakeFiles/singleServoControl.dir/all
+CMakeFiles/Multi_Servogp_Control.dir/all: CMakeFiles/multiServoControl.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Multi_Servogp_Control.dir/build.make CMakeFiles/Multi_Servogp_Control.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Multi_Servogp_Control.dir/build.make CMakeFiles/Multi_Servogp_Control.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=1,2 "Built target Multi_Servogp_Control"
@@ -690,7 +344,7 @@ CMakeFiles/Multi_Servogp_Control.dir/all: CMakeFiles/singleServoControl.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Multi_Servogp_Control.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 10
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Multi_Servogp_Control.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
 .PHONY : CMakeFiles/Multi_Servogp_Control.dir/rule
@@ -703,32 +357,6 @@ Multi_Servogp_Control: CMakeFiles/Multi_Servogp_Control.dir/rule
 CMakeFiles/Multi_Servogp_Control.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Multi_Servogp_Control.dir/build.make CMakeFiles/Multi_Servogp_Control.dir/clean
 .PHONY : CMakeFiles/Multi_Servogp_Control.dir/clean
-
-#=============================================================================
-# Target rules for target ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir
-
-# All Build rule for target.
-ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all: CMakeFiles/ftservocontrol.dir/all
-	$(MAKE) $(MAKESILENT) -f ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/build.make ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/depend
-	$(MAKE) $(MAKESILENT) -f ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/build.make ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles --progress-num=8 "Built target ftservocontrol__py"
-.PHONY : ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all
-
-# Build rule for subdir invocation for target.
-ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 23
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol/CMakeFiles 0
-.PHONY : ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/rule
-
-# Convenience name for target.
-ftservocontrol__py: ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/rule
-.PHONY : ftservocontrol__py
-
-# clean rule for target.
-ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/clean:
-	$(MAKE) $(MAKESILENT) -f ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/build.make ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/clean
-.PHONY : ftservocontrol__py/CMakeFiles/ftservocontrol__py.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

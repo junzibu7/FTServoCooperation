@@ -120,7 +120,13 @@ Multi_Servogp_Control: /opt/ros/foxy/lib/libsensor_msgs__rosidl_typesupport_c.so
 Multi_Servogp_Control: /opt/ros/foxy/lib/libsensor_msgs__rosidl_typesupport_introspection_cpp.so
 Multi_Servogp_Control: /opt/ros/foxy/lib/libsensor_msgs__rosidl_typesupport_cpp.so
 Multi_Servogp_Control: /opt/ros/foxy/lib/libcv_bridge.so
+Multi_Servogp_Control: libmultiServoControl.so
 Multi_Servogp_Control: libsingleServoControl.so
+Multi_Servogp_Control: /home/cius/foxy_ws/install/msgs/lib/libmsgs__rosidl_typesupport_introspection_c.so
+Multi_Servogp_Control: /home/cius/foxy_ws/install/msgs/lib/libmsgs__rosidl_generator_c.so
+Multi_Servogp_Control: /home/cius/foxy_ws/install/msgs/lib/libmsgs__rosidl_typesupport_c.so
+Multi_Servogp_Control: /home/cius/foxy_ws/install/msgs/lib/libmsgs__rosidl_typesupport_introspection_cpp.so
+Multi_Servogp_Control: /home/cius/foxy_ws/install/msgs/lib/libmsgs__rosidl_typesupport_cpp.so
 Multi_Servogp_Control: libftservo_Control.so
 Multi_Servogp_Control: libmath_tools_lib.so
 Multi_Servogp_Control: /usr/local/lib/libopencv_aruco.so.4.2.0

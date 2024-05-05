@@ -28,6 +28,7 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	// System Initialization
 	timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&SingleServoNode::T_servogroup_to_camera, this));
 	pub_servogroup_to_cam = this->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
+	pub_target_loss = this->create_publisher<msgs::msg::Loss>("/target_loss_" + cam, 1);
 	sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_center_callback, this, std::placeholders::_1));
 	
     servogroup_to_cam = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -172,6 +173,13 @@ void SingleServoNode::target_center_callback(const msgs::msg::Landmark::SharedPt
 		target_center.x += msg->x[i] / msg->x.size();
 		target_center.y += msg->y[i] / msg->y.size();
 	}
+
+	// Calculate the target loss
+	Eigen::Vector2d target_loss_cam = target_loss(target_center);
+	target_loss_msg.header.stamp = nh->now();
+	target_loss_msg.x = target_loss_cam.x();
+	target_loss_msg.y = target_loss_cam.y();
+	pub_target_loss->publish(target_loss_msg);
 }
 
 Eigen::Vector2d SingleServoNode::target_loss(cv::Point2f target_center){

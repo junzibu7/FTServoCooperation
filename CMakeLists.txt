@@ -139,6 +139,23 @@ else()
     ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
 
+  add_library(multiServoControl SHARED src/multiServoControl.cpp)
+  ament_target_dependencies(multiServoControl
+    rclcpp
+    std_msgs
+    tf2
+    cv_bridge
+    geometry_msgs
+    tf2_ros
+    msgs
+  )
+  target_link_libraries(multiServoControl
+    singleServoControl
+    ftservo_Control
+    math_tools_lib
+    ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
+  )
+
   add_executable(WritePos src/WritePos.cpp)
   ament_target_dependencies(WritePos rclcpp std_msgs tf2 cv_bridge)
   target_link_libraries(WritePos
@@ -159,10 +176,11 @@ else()
     singleServoControl
   )
 
-  # rosidl_get_typesupport_target(cpp_typesupport_target
-  #   ${PROJECT_NAME} rosidl_typesupport_cpp)
- 
-  # target_link_libraries(singleServoControl "${cpp_typesupport_target}")
+  add_executable(Multi_Servogp_Control src/Multi_Servogp_Control.cpp)
+  ament_target_dependencies(Multi_Servogp_Control rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(Multi_Servogp_Control
+    multiServoControl
+  )
 
 
   install(
@@ -172,11 +190,13 @@ else()
 
   install(TARGETS 
     singleServoControl
+    multiServoControl
     ftservo_Control
     math_tools_lib
     WritePos
     initialize
     Single_Servogp_Control
+    Multi_Servogp_Control
     RUNTIME DESTINATION lib/${PROJECT_NAME}
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
   )

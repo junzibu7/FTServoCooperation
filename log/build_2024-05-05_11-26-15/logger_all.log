@@ -1,0 +1,61 @@
+[0.077s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.077s] DEBUG:colcon:Parsed command line arguments: Namespace(ament_cmake_args=None, base_paths=['.'], build_base='build', catkin_cmake_args=None, catkin_skip_building_tests=False, cmake_args=None, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, cmake_target=None, cmake_target_skip_unavailable=False, continue_on_error=False, event_handlers=None, executor='sequential', install_base='install', log_base=None, log_level=None, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7efd2d0e2eb0>>, merge_install=False, paths=None, symlink_install=False, test_result_base=None, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7efd2d0e2eb0>, verb_name='build', verb_parser=CustomArgumentParser(prog='colcon build', usage=None, description='Build a set of packages.', formatter_class=<class 'colcon_core.command.CustomFormatter'>, conflict_handler='error', add_help=True))
+[0.151s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.151s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.152s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.152s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/cius/foxy_ws/src/ftservocontrol'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.161s] DEBUG:colcon.colcon_core.package_identification:Package '.' with type 'ros.ament_cmake' and name 'ftservocontrol'
+[0.161s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.161s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.161s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'cmake_args' from command line to 'None'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'cmake_target' from command line to 'None'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'cmake_clean_cache' from command line to 'False'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'cmake_clean_first' from command line to 'False'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'cmake_force_configure' from command line to 'False'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'ament_cmake_args' from command line to 'None'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'catkin_cmake_args' from command line to 'None'
+[0.173s] Level 5:colcon.colcon_core.verb:set package 'ftservocontrol' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.173s] DEBUG:colcon.colcon_core.verb:Building package 'ftservocontrol' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol', 'merge_install': False, 'path': '/home/cius/foxy_ws/src/ftservocontrol', 'symlink_install': False, 'test_result_base': None}
+[0.173s] INFO:colcon.colcon_core.executor:Executing jobs using 'sequential' executor
+[0.173s] DEBUG:colcon.colcon_core.executor.sequential:run_until_complete 'ftservocontrol'
+[0.174s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/cius/foxy_ws/src/ftservocontrol' with build type 'ament_cmake'
+[0.174s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/cius/foxy_ws/src/ftservocontrol'
+[0.174s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.174s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.179s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol -- -j24 -l24
+[3.682s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/cius/foxy_ws/src/ftservocontrol/build/ftservocontrol -- -j24 -l24
+[3.700s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ftservocontrol)
+[3.701s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol' for CMake module files
+[3.702s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol' for CMake config files
+[3.702s] Level 1:colcon.colcon_core.shell:create_environment_hook('ftservocontrol', 'cmake_prefix_path')
+[3.702s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/hook/cmake_prefix_path.dsv'
+[3.702s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/hook/cmake_prefix_path.sh'
+[3.703s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/lib'
+[3.703s] Level 1:colcon.colcon_core.shell:create_environment_hook('ftservocontrol', 'ld_library_path_lib')
+[3.703s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/hook/ld_library_path_lib.dsv'
+[3.703s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/hook/ld_library_path_lib.sh'
+[3.704s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/bin'
+[3.704s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/lib/pkgconfig/ftservocontrol.pc'
+[3.704s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/lib/python3.8/site-packages'
+[3.704s] Level 1:colcon.colcon_core.shell:create_environment_hook('ftservocontrol', 'pythonpath')
+[3.705s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/hook/pythonpath.dsv'
+[3.705s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/hook/pythonpath.sh'
+[3.705s] Level 1:colcon.colcon_core.environment:checking '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/bin'
+[3.705s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/package.dsv'
+[3.706s] INFO:colcon.colcon_core.shell:Creating package script '/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/ftservocontrol/package.sh'
+[3.707s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/cius/foxy_ws/src/ftservocontrol/install/ftservocontrol/share/colcon-core/packages/ftservocontrol)
+[3.707s] DEBUG:colcon.colcon_core.executor.sequential:run_until_complete 'ftservocontrol' finished with '2'
+[3.707s] DEBUG:colcon.colcon_core.executor.sequential:closing loop
+[3.707s] DEBUG:colcon.colcon_core.executor.sequential:loop closed
+[3.707s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[3.708s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[3.708s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/cius/foxy_ws/src/ftservocontrol/install/local_setup.sh'
+[3.708s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/cius/foxy_ws/src/ftservocontrol/install/_local_setup_util_sh.py'
+[3.709s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/cius/foxy_ws/src/ftservocontrol/install/setup.sh'

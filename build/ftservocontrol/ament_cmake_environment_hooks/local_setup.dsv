@@ -1,4 +1,2 @@
 source;share/ftservocontrol/environment/ament_prefix_path.sh
-source;share/ftservocontrol/environment/library_path.sh
 source;share/ftservocontrol/environment/path.sh
-source;share/ftservocontrol/environment/pythonpath.sh
