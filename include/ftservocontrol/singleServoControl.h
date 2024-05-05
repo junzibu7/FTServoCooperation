@@ -75,6 +75,7 @@ public:
 	double target_down_status = down_status_init;
 	double down_change = 0;
 	double up_change = 0;
+	bool force_flag = false;
 
 	//Target Parameters
 	double target_t_x = 0;
@@ -95,13 +96,14 @@ public:
 	Eigen::Matrix4Xd T_cam_to_estimation = Eigen::Matrix4d::Identity();
 
 	//Publishers and Subscribers
+	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr pub_servogroup_to_cam;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_estimation;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_coopestimation;
-	// rclcpp::Subscription<ftservocontrol::msg::landmark>::SharedPtr sub_irlandmark;
+	rclcpp::Subscription<msgs::msg::Landmark>::SharedPtr sub_irlandmark;
 
 	//tf
-	tf2::Stamped<tf2::Transform> servogroup_to_cam;
+	std::shared_ptr<tf2_ros::TransformBroadcaster> servogroup_to_cam;
 	tf2::Stamped<tf2::Transform> cam_to_estimation;
 	tf2::Stamped<tf2::Transform> cam_to_coopestimation;
 	geometry_msgs::msg::TransformStamped msg_servogroup_to_cam;
@@ -144,7 +146,15 @@ public:
 	* @brief: This function is the callback function for the irlandmark subscriber
 	* @param: msg: the message received from the target centre subscriber
 	*/
-	void target_center_callback(const msgs::msg::Landmark &msg);
+	void target_center_callback(const msgs::msg::Landmark::SharedPtr msg);
+
+
+	/*
+	* @brief: This function calculates the target loss
+	* @param: target_center: the target center
+	* @return: the target loss
+	*/
+	Eigen::Vector2d target_loss(cv::Point2f target_center);
 };
 
 #endif // SINGLESERVOCONTROL_H
