@@ -10,16 +10,29 @@ class MultiServoNode: public rclcpp::Node
 {
 public:
 	//Basic Parameters
-	
+	Eigen::Matrix<double,4,4> Q = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,4,4> R = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,4,4> S = Eigen::Matrix<double,4,4>::Identity();
 
 	//Servo Parameters
-	
+	Eigen::Vector2d servo12_control;
+	Eigen::Vector2d servo34_control;
+	Eigen::Vector2d servo56_control;
+	Eigen::Vector2d servo78_control;
+	Eigen::Vector2d servo12_velcity;
+	Eigen::Vector2d servo34_velcity;
+	Eigen::Vector2d servo56_velcity;
+	Eigen::Vector2d servo78_velcity;
+	double k_vel = 1000;
+	Eigen::Matrix<double,4,1> servo_cur = Eigen::Matrix<double,4,1>::Zero();
 
 	//Target Parameters
 	Eigen::Vector2d target_loss_camA;
 	Eigen::Vector2d target_loss_camB;
 	Eigen::Vector2d target_loss_camC;
 	Eigen::Vector2d target_loss_camD;
+	Eigen::Matrix<double,4,1> loss_cur = Eigen::Matrix<double,4,1>::Zero();
+	Eigen::Matrix<double,4,1> loss_nex = Eigen::Matrix<double,4,1>::Zero();
 	
 
 	//Servo Transforms

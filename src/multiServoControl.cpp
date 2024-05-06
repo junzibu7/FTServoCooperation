@@ -39,3 +39,4 @@ void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr 
 	target_loss_camD.x() = msg->x;
 	target_loss_camD.y() = msg->y;
 }
+
