@@ -39,14 +39,14 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 {
 	nh = nh_;
 	
-	// const char *serial_ = serial_str.c_str();
+	const char *serial_ = serial_str.c_str();
 	
-	// // Servo Initialization
-	// _servo.init(serial_, 2, nh, {id_down, id_up});
+	// Servo Initialization
+	_servo.init(serial_, 2, nh, {id_down, id_up});
 
 
 	// Move the servo to the initial position
-	// servo_move(down_status_init, up_status_init);
+	servo_move(down_status_init, up_status_init);
 
 	// std::this_thread::sleep_for(1s);
 
@@ -94,28 +94,28 @@ void SingleServoNode::servo_move(double target_down_status, double target_up_sta
 
 void SingleServoNode::T_servogroup_to_camera(){
 	// Get the status of the servos
-	// down_status = _servo.read(id_down);
-	// up_status = _servo.read(id_up);
+	down_status = _servo.read(id_down);
+	up_status = _servo.read(id_up);
 
-	// cout << "down_status:" << down_status << endl;
-	// cout << "up_status:" << up_status << endl;
+	cout << "down_status:" << down_status << endl;
+	cout << "up_status:" << up_status << endl;
 
 	down_change = (down_status - down_status_init) * M_PI / 180;
 	up_change = (up_status - up_status_init) * M_PI / 180;
 
-	// cout << "down_change:" << down_change / M_PI * 180 << endl;
-	// cout << "up_change:" << up_change / M_PI * 180 << endl;
+	cout << "down_change:" << down_change / M_PI * 180 << endl;
+	cout << "up_change:" << up_change / M_PI * 180 << endl;
 
 	// Servo down to up
 	T_DU << cos(down_change), sin(down_change), 0, 0, - sin(down_change), cos(down_change), 0, 0, 0, 0, 1, 40.72/1000, 0, 0, 0, 1;
 	// Servo up to Bracket
-	T_UB << cos(up_change), 0, -sin(up_change), 0, 0, 1, 0, 0, sin(up_change), 0, cos(up_change), 39.60/1000, 0, 0, 0, 1;
+	T_UB << cos(up_change), 0, sin(up_change), 0, 0, 1, 0, 0, - sin(up_change), 0, cos(up_change), 39.60/1000, 0, 0, 0, 1;
 	// Bracket to Camera
 	T_BC << 1, 0, 0, (-11 + 15) / 1000, 0, 1, 0, (26.25 + 17 + 4.22) / 1000, 0, 0, 1, 66.5 / 1000, 0, 0, 0, 1;
 
 	// Transformation from the servo group to the camera
 	T_servogroup_to_cam = T_DU * T_UB * T_BC;
-	// cout << T_servogroup_to_cam << endl;
+	cout << T_servogroup_to_cam << endl;
 
 	// Publish the transformation from the servo group to the camera
 	msg_servogroup_to_cam.header.stamp = nh->now();
@@ -179,7 +179,9 @@ void SingleServoNode::target_center_callback(const msgs::msg::Landmark::SharedPt
 	target_loss_msg.header.stamp = nh->now();
 	target_loss_msg.x = target_loss_cam.x();
 	target_loss_msg.y = target_loss_cam.y();
+	target_loss_msg.force_flag = force_flag;
 	pub_target_loss->publish(target_loss_msg);
+	force_flag = false;
 }
 
 Eigen::Vector2d SingleServoNode::target_loss(cv::Point2f target_center){

@@ -10,9 +10,13 @@ class MultiServoNode: public rclcpp::Node
 {
 public:
 	//Basic Parameters
+	Eigen::Matrix<double,4,4> K = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,4,4> S = Eigen::Matrix<double,4,4>::Identity();
 	Eigen::Matrix<double,4,4> Q = Eigen::Matrix<double,4,4>::Identity();
 	Eigen::Matrix<double,4,4> R = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> S = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,4,4> H = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,4,4> iter_A = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,4,4> iter_B = Eigen::Matrix<double,4,4>::Identity();
 
 	//Servo Parameters
 	Eigen::Vector2d servo12_control;
@@ -23,8 +27,9 @@ public:
 	Eigen::Vector2d servo34_velcity;
 	Eigen::Vector2d servo56_velcity;
 	Eigen::Vector2d servo78_velcity;
-	double k_vel = 1000;
+	double s_vel = 1000;
 	Eigen::Matrix<double,4,1> servo_cur = Eigen::Matrix<double,4,1>::Zero();
+	Eigen::Matrix<double,4,1> servo_vel = Eigen::Matrix<double,4,1>::Zero();
 
 	//Target Parameters
 	Eigen::Vector2d target_loss_camA;
@@ -62,6 +67,10 @@ public:
 	void target_loss_camC_callback(const msgs::msg::Loss::SharedPtr msg);
 	void target_loss_camD_callback(const msgs::msg::Loss::SharedPtr msg);
 
+	/*
+	 * @brief Calculate the control signal for the servos
+	 */
+	void calculate_control_signal();
 	
 };
 

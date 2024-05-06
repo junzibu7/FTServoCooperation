@@ -26,7 +26,7 @@ def generate_launch_description():
         'source_frame': 'EstimationfromcamB',
         'target_frame': 'camB',
         'cam': 'camB',
-        'serial': '/dev/ttyUSB0'
+        'serial': '/dev/ttyUSB1'
     }
 
     # 添加第一个节点并设置参数
