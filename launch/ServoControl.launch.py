@@ -9,7 +9,7 @@ def generate_launch_description():
     # 创建启动器描述
     ld = LaunchDescription()
 
-    # 为第一个节点ServoGroup12设置参数
+    # 为节点ServoGroup12设置参数
     servo_group_12_params = {
         'id_up': 2,
         'id_down': 1,
@@ -19,7 +19,7 @@ def generate_launch_description():
         'serial': '/dev/ttyUSB0'
     }
     
-    # 为第二个节点ServoGroup34设置参数
+    # 为节点ServoGroup34设置参数
     servo_group_34_params = {
         'id_up': 4,
         'id_down': 3,
@@ -27,6 +27,26 @@ def generate_launch_description():
         'target_frame': 'camB',
         'cam': 'camB',
         'serial': '/dev/ttyUSB1'
+    }
+
+    # 为节点ServoGroup56设置参数
+    servo_group_56_params = {
+        'id_up': 6,
+        'id_down': 5,
+        'source_frame': 'EstimationfromcamC',
+        'target_frame': 'camC',
+        'cam': 'camC',
+        'serial': '/dev/ttyUSB2'
+    }
+
+    # 为节点ServoGroup78设置参数
+    servo_group_78_params = {
+        'id_up': 8,
+        'id_down': 7,
+        'source_frame': 'EstimationfromcamD',
+        'target_frame': 'camD',
+        'cam': 'camD',
+        'serial': '/dev/ttyUSB3'
     }
 
     # 添加第一个节点并设置参数
@@ -48,6 +68,26 @@ def generate_launch_description():
         parameters=[servo_group_34_params]
     )
     ld.add_action(servo_group_34)
+
+    # 添加第三个节点并设置参数
+    servo_group_56 = launch_ros.actions.Node(
+        package='ftservocontrol',
+        executable='Single_Servogp_Control',
+        name='ServoGroup56',
+        output='screen',
+        parameters=[servo_group_56_params]
+    )
+    ld.add_action(servo_group_56)
+
+    # 添加第四个节点并设置参数
+    servo_group_78 = launch_ros.actions.Node(
+        package='ftservocontrol',
+        executable='Single_Servogp_Control',
+        name='ServoGroup78',
+        output='screen',
+        parameters=[servo_group_78_params]
+    )
+    ld.add_action(servo_group_78)
 
     # 返回启动器描述
     return ld

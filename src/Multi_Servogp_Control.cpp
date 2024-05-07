@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
     while(rclcpp::ok())
     {
-        
+        MulSC_node->calculate_control_signal();
         rclcpp::spin_some(MulSC_node);
     }
     rclcpp::shutdown();

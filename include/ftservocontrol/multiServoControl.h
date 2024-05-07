@@ -10,34 +10,31 @@ class MultiServoNode: public rclcpp::Node
 {
 public:
 	//Basic Parameters
-	Eigen::Matrix<double,4,4> K = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> S = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> Q = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> R = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> H = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> iter_A = Eigen::Matrix<double,4,4>::Identity();
-	Eigen::Matrix<double,4,4> iter_B = Eigen::Matrix<double,4,4>::Identity();
+	Eigen::Matrix<double,8,8> K = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> S = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> Q = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> R = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> H = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> iter_A = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> iter_B = Eigen::Matrix<double,8,8>::Identity();
+	Eigen::Matrix<double,8,8> iter_B_buf = Eigen::Matrix<double,8,8>::Identity();
 
 	//Servo Parameters
-	Eigen::Vector2d servo12_control;
-	Eigen::Vector2d servo34_control;
-	Eigen::Vector2d servo56_control;
-	Eigen::Vector2d servo78_control;
-	Eigen::Vector2d servo12_velcity;
-	Eigen::Vector2d servo34_velcity;
-	Eigen::Vector2d servo56_velcity;
-	Eigen::Vector2d servo78_velcity;
 	double s_vel = 1000;
-	Eigen::Matrix<double,4,1> servo_cur = Eigen::Matrix<double,4,1>::Zero();
-	Eigen::Matrix<double,4,1> servo_vel = Eigen::Matrix<double,4,1>::Zero();
+	Eigen::Matrix<double,8,1> servo_cur = Eigen::Matrix<double,8,1>::Zero();
+	Eigen::Matrix<double,8,1> servo_vel = Eigen::Matrix<double,8,1>::Zero();
+	msgs::msg::Servocommand servo12_command;
+	msgs::msg::Servocommand servo34_command;
+	msgs::msg::Servocommand servo56_command;
+	msgs::msg::Servocommand servo78_command;
 
 	//Target Parameters
-	Eigen::Vector2d target_loss_camA;
-	Eigen::Vector2d target_loss_camB;
-	Eigen::Vector2d target_loss_camC;
-	Eigen::Vector2d target_loss_camD;
-	Eigen::Matrix<double,4,1> loss_cur = Eigen::Matrix<double,4,1>::Zero();
-	Eigen::Matrix<double,4,1> loss_nex = Eigen::Matrix<double,4,1>::Zero();
+	bool camA_force_flag = false;
+	bool camB_force_flag = false;
+	bool camC_force_flag = false;
+	bool camD_force_flag = false;
+	Eigen::Matrix<double,8,1> loss_cur = Eigen::Matrix<double,8,1>::Zero();
+	Eigen::Matrix<double,8,1> loss_nex = Eigen::Matrix<double,8,1>::Zero();
 	
 
 	//Servo Transforms
@@ -48,6 +45,10 @@ public:
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camB;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camC;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camD;
+	rclcpp::Publisher<msgs::msg::Servocommand>::SharedPtr pub_servo12_command;
+	rclcpp::Publisher<msgs::msg::Servocommand>::SharedPtr pub_servo34_command;
+	rclcpp::Publisher<msgs::msg::Servocommand>::SharedPtr pub_servo56_command;
+	rclcpp::Publisher<msgs::msg::Servocommand>::SharedPtr pub_servo78_command;
 
 	//tf
 	std::shared_ptr<tf2_ros::TransformBroadcaster> servogroup_to_cam;
@@ -71,6 +72,11 @@ public:
 	 * @brief Calculate the control signal for the servos
 	 */
 	void calculate_control_signal();
+
+	/*
+	 * @brief Solve the minimum cost problem
+	 */
+	void min_cost_solve();
 	
 };
 

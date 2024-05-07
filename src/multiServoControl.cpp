@@ -14,31 +14,38 @@ MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 	sub_target_loss_camC = this->create_subscription<msgs::msg::Loss>("/target_loss_camC", 10, std::bind(&MultiServoNode::target_loss_camC_callback, this, std::placeholders::_1));
 	sub_target_loss_camD = this->create_subscription<msgs::msg::Loss>("/target_loss_camD", 10, std::bind(&MultiServoNode::target_loss_camD_callback, this, std::placeholders::_1));
 
+	pub_servo12_command = this->create_publisher<msgs::msg::Servocommand>("/servo12_command", 1);
+	pub_servo34_command = this->create_publisher<msgs::msg::Servocommand>("/servo34_command", 1);
+	pub_servo56_command = this->create_publisher<msgs::msg::Servocommand>("/servo56_command", 1);
+	pub_servo78_command = this->create_publisher<msgs::msg::Servocommand>("/servo78_command", 1);
 }
 
 void MultiServoNode::target_loss_camA_callback(const msgs::msg::Loss::SharedPtr msg)
 {
-	target_loss_camA.x() = msg->x;
-	target_loss_camA.y() = msg->y;
-
+	loss_cur(0) = msg->x;
+	loss_cur(1) = msg->y;
+	camA_force_flag = msg->force_flag;
 }
 
 void MultiServoNode::target_loss_camB_callback(const msgs::msg::Loss::SharedPtr msg)
 {
-	target_loss_camB.x() = msg->x;
-	target_loss_camB.y() = msg->y;
+	loss_cur(2) = msg->x;
+	loss_cur(3) = msg->y;
+	camB_force_flag = msg->force_flag;
 }
 
 void MultiServoNode::target_loss_camC_callback(const msgs::msg::Loss::SharedPtr msg)
 {
-	target_loss_camC.x() = msg->x;
-	target_loss_camC.y() = msg->y;
+	loss_cur(4) = msg->x;
+	loss_cur(5) = msg->y;
+	camC_force_flag = msg->force_flag;
 }
 
 void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr msg)
-{
-	target_loss_camD.x() = msg->x;
-	target_loss_camD.y() = msg->y;
+{	
+	loss_cur(6) = msg->x;
+	loss_cur(7) = msg->y;
+	camD_force_flag = msg->force_flag;
 }
 
 void MultiServoNode::calculate_control_signal()
@@ -46,25 +53,70 @@ void MultiServoNode::calculate_control_signal()
 	// Calculate k = control / loss
 	K = (R + iter_B.transpose()*Q*iter_B + S.transpose()*H*S).inverse()*iter_B.transpose()*Q*iter_A;
 
-	loss_cur(0) = target_loss_camA.x();
-	loss_cur(1) = target_loss_camA.y();
-	loss_cur(2) = target_loss_camB.x();
-	loss_cur(3) = target_loss_camB.y();
-
 	servo_cur = K * loss_cur;
 
-	Eigen::Matrix<double,4,4> iter_B_buf = iter_B;
+	iter_B_buf = iter_B;
 
-	if(pow(servo_cur(0), 2) + pow(servo_cur(1), 2) > pow(servo_cur(2), 2) + pow(servo_cur(3), 2))
+	min_cost_solve();
+
+	K = (R + iter_B_buf.transpose()*Q*iter_B_buf + S.transpose()*H*S).inverse()*iter_B_buf.transpose()*Q*iter_A;
+	servo_cur = K * loss_cur;
+
+	loss_nex = iter_A * loss_cur + iter_B_buf * servo_cur;
+	servo_vel = S * K * loss_cur;
+
+	servo12_command.state_down = loss_nex(0);
+	servo12_command.state_up = loss_nex(1);
+	servo34_command.state_down = loss_nex(2);
+	servo34_command.state_up = loss_nex(3);
+	servo56_command.state_down = loss_nex(4);
+	servo56_command.state_up = loss_nex(5);
+	servo78_command.state_down = loss_nex(6);
+	servo78_command.state_up = loss_nex(7);
+
+	servo12_command.velocity_down = servo_vel(0);
+	servo12_command.velocity_up = servo_vel(1);
+	servo34_command.velocity_down = servo_vel(2);
+	servo34_command.velocity_up = servo_vel(3);
+	servo56_command.velocity_down = servo_vel(4);
+	servo56_command.velocity_up = servo_vel(5);
+	servo78_command.velocity_down = servo_vel(6);
+	servo78_command.velocity_up = servo_vel(7);
+
+	servo12_command.force_flag = camA_force_flag;
+	servo34_command.force_flag = camB_force_flag;
+	servo56_command.force_flag = camC_force_flag;
+	servo78_command.force_flag = camD_force_flag;
+
+	pub_servo12_command->publish(servo12_command);
+	pub_servo34_command->publish(servo34_command);
+	pub_servo56_command->publish(servo56_command);
+	pub_servo78_command->publish(servo78_command);
+
+}
+
+void MultiServoNode::min_cost_solve()
+{
+	double cost = 100000;
+	Eigen::Vector2i servo_select = Eigen::Vector2i::Zero();
+
+	for(int i = 0; i < 3; i++)
 	{
-		iter_B_buf.block<2, 2>(2, 2) = Eigen::Matrix2d::Zero();
-	}
-	else
-	{
-		iter_B_buf.block<2, 2>(0, 0) = Eigen::Matrix2d::Zero();
+		for(int j = i + 1; j < 4; j++)
+		{
+			if(pow(servo_cur(2*i), 2) + pow(servo_cur(2*i + 1), 2) + pow(servo_cur(2*j), 2) + pow(servo_cur(2*j + 1), 2) < cost)
+			{
+				cost = pow(servo_cur(2*i), 2) + pow(servo_cur(2*i + 1), 2) + pow(servo_cur(2*j), 2) + pow(servo_cur(2*j + 1), 2);
+				servo_select(0) = i;
+				servo_select(1) = j;
+			}
+		}
 	}
 
-	for(int i = 0; i < 4; i++)
+	iter_B_buf.block<2, 2>(servo_select(0), servo_select(0)) = Eigen::Matrix2d::Zero();
+	iter_B_buf.block<2, 2>(servo_select(1), servo_select(1)) = Eigen::Matrix2d::Zero();
+
+	for(int i = 0; i < 8; i++)
 	{
 		if(servo_cur(i) > 50)
 		{
@@ -76,7 +128,5 @@ void MultiServoNode::calculate_control_signal()
 		}
 	}
 
-	K = -(R + iter_B_buf.transpose()*Q*iter_B_buf + S.transpose()*H*S).inverse()*iter_B_buf.transpose()*Q*iter_A;
-
-	loss_nex = iter_A * loss_cur + iter_B_buf * servo_cur;
 }
+

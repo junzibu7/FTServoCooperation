@@ -48,6 +48,7 @@
 
 #include <msgs/msg/landmark.hpp>
 #include <msgs/msg/loss.hpp>
+#include <msgs/msg/servocommand.hpp>
 
 
 using namespace std::chrono_literals;
