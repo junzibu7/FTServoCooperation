@@ -1,2 +1,2 @@
 #!/bin/bash
-roslaunch ftservoControl Servo12Control.launch
+ros2 launch ftservocontrol ServoControl.launch.py

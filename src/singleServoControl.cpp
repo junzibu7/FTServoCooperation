@@ -13,6 +13,9 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	this->declare_parameter<std::string>("source_frame", "camA");
 	this->declare_parameter<std::string>("cam", "camA"); 
 	this->declare_parameter<std::string>("serial", "/dev/ttyUSB0");
+	this->declare_parameter<int>("up_init", 180);
+	this->declare_parameter<int>("down_init", 180);
+	this->declare_parameter<std::string>("camera_config_file", "config/four_camera.yaml");
 
 	id_up = this->get_parameter("id_up").as_int();
 	id_down = this->get_parameter("id_down").as_int();
@@ -20,6 +23,11 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	source_frame = this->get_parameter("source_frame").as_string();
 	cam = this->get_parameter("cam").as_string();
 	serial_str = this->get_parameter("serial").as_string();
+	up_init = this->get_parameter("up_init").as_int();
+	down_init = this->get_parameter("down_init").as_int();
+	camera_config_file = this->get_parameter("camera_config_file").as_string();
+
+    loadCameraConfig(camera_config_file);
 
 	cout << "id_up:" << id_up << endl;
 	cout << "id_down:" << id_down << endl;
@@ -30,7 +38,7 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	pub_servogroup_to_cam = this->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
 	pub_target_loss = this->create_publisher<msgs::msg::Loss>("/target_loss_" + cam, 1);
 	sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_center_callback, this, std::placeholders::_1));
-	
+	sub_ServoCommand = this->create_subscription<msgs::msg::Servocommand>("servo" + std::to_string(id_down) + std::to_string(id_up) + "_command", 10, std::bind(&SingleServoNode::servo_command_callback, this, std::placeholders::_1));
     servogroup_to_cam = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 	// cout << "System has been initialized!" << endl;
 }
@@ -46,7 +54,7 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 
 
 	// Move the servo to the initial position
-	// servo_move(down_status_init, up_status_init);
+	// servo_move(down_init, up_init);
 
 	// std::this_thread::sleep_for(1s);
 
@@ -94,11 +102,11 @@ void SingleServoNode::servo_move(double target_down_status, double target_up_sta
 
 void SingleServoNode::T_servogroup_to_camera(){
 	// Get the status of the servos
-	down_status = _servo.read(id_down);
-	up_status = _servo.read(id_up);
+	// down_status = _servo.read(id_down);
+	// up_status = _servo.read(id_up);
 
-	cout << "down_status:" << down_status << endl;
-	cout << "up_status:" << up_status << endl;
+	// cout << "down_status:" << down_status << endl;
+	// cout << "up_status:" << up_status << endl;
 
 	down_change = (down_status - down_status_init) * M_PI / 180;
 	up_change = (up_status - up_status_init) * M_PI / 180;
@@ -175,7 +183,7 @@ void SingleServoNode::target_center_callback(const msgs::msg::Landmark::SharedPt
 	}
 
 	// Calculate the target loss
-	Eigen::Vector2d target_loss_cam = target_loss(target_center);
+	Eigen::Vector2d target_loss_cam = target_status2loss(target_center);
 	target_loss_msg.header.stamp = nh->now();
 	target_loss_msg.x = target_loss_cam.x();
 	target_loss_msg.y = target_loss_cam.y();
@@ -184,12 +192,12 @@ void SingleServoNode::target_center_callback(const msgs::msg::Landmark::SharedPt
 	force_flag = false;
 }
 
-Eigen::Vector2d SingleServoNode::target_loss(cv::Point2f target_center){
+Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_center){
 	double target_loss_x = (target_center.x - 320) / 320;
 	double target_loss_y = (target_center.y - 240) / 240;
-	double k1 = 0.5;
-	double k2 = 5.0;
-	double c = 1.0;
+	// double k1 = 0.5;
+	// double k2 = 5.0;
+	// double c = 1.0;
 
 	// Calculate the target loss
 	Eigen::Vector2d target_loss;
@@ -217,9 +225,9 @@ Eigen::Vector2d SingleServoNode::target_loss(cv::Point2f target_center){
 	// 	force_flag = true;
 	// }
 
-	//cubic loss version(pass point
-	target_loss.x() = pow(target_loss_x, 3);
-	target_loss.y() = pow(target_loss_y, 3);
+	//cubic loss version
+	target_loss.x() = 10 * pow(target_loss_x, 3);
+	target_loss.y() = 10 * pow(target_loss_y, 3);
 
 	if(target_loss_x > 1.2){
 		target_loss.x() = 3;
@@ -238,4 +246,44 @@ Eigen::Vector2d SingleServoNode::target_loss(cv::Point2f target_center){
 	}
 
 	return target_loss;
+}
+
+Eigen::Vector2d SingleServoNode::target_loss2status(double loss_x, double loss_y, bool force_flag){
+	Eigen::Vector2d target_image_pos;
+	target_image_pos.x() = 320 + 320 * pow(loss_x / 10, 1/3);
+	target_image_pos.y() = 240 + 240 * pow(loss_y / 10, 1/3);
+
+	if(force_flag){
+		target_image_pos.x() = 320;
+		target_image_pos.y() = 240;
+	}
+
+	return target_image_pos;
+}
+
+void SingleServoNode::servo_command_callback(const msgs::msg::Servocommand::SharedPtr msg)
+{
+	// Move the servo to the target position
+	Eigen::Vector2d target_image_pos = target_loss2status(msg->state_down, msg->state_up, msg->force_flag); 
+}
+
+void SingleServoNode::loadCameraConfig(const std::string& config_path)
+{
+    std::ifstream fin(config_path);
+    YAML::Node camera_config = YAML::Load(fin);
+            
+    auto IR1_camera = camera_config[cam]["ir_camera"]["IR_1"];
+    // int image_width = IR1_camera["image_width"].as<int>();
+    // int image_height = IR1_camera["image_height"].as<int>();
+	fx = IR1_camera["fx"].as<double>();
+	fy = IR1_camera["fy"].as<double>();
+	cx = IR1_camera["cx"].as<double>();
+	cy = IR1_camera["cy"].as<double>();
+
+	// camera_matrix = (cv::Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
+}
+
+void target_status2change(Eigen::Vector2d target_image_pos)
+{
+	
 }

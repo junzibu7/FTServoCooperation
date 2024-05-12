@@ -4,6 +4,7 @@
 #include <ftservocontrol/FEETECHservo.h>
 #include <ftservocontrol/math_tools.h>
 #include <math.h>
+#include <yaml-cpp/yaml.h>
 
 #include <tf2/LinearMath/Transform.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -38,7 +39,6 @@
 #include <fstream>
 #include <iostream>
 #include <cstdio>
-#include <fstream>
 #include <cmath>
 #include <ctime>
 #include <queue>
@@ -61,6 +61,7 @@ public:
 	string source_frame, target_frame, cam;
 	string serial_str;
 	std::shared_ptr<rclcpp::Node> nh;
+	std::string camera_config_file;
 
 	//Servo Parameters
 	ftServo _servo;
@@ -77,6 +78,10 @@ public:
 	double target_down_status = down_status_init;
 	double down_change = 0;
 	double up_change = 0;
+	double target_down_change = 0;
+	double target_up_change = 0;
+	int up_init = 180;
+	int down_init =180;
 	bool force_flag = false;
 
 	//Target Parameters
@@ -89,6 +94,10 @@ public:
 	double target_q_w = 0;
     cv::Point2f target_center = cv::Point2f(0, 0);
 	msgs::msg::Loss target_loss_msg;
+
+	//Camera Parameters
+	double fx, fy, cx, cy;
+	cv::Mat camera_matrix;
 
 	//Servo Transforms
 	Eigen::Matrix4Xd T_DU = Eigen::Matrix4d::Identity();
@@ -105,6 +114,7 @@ public:
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_estimation;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_coopestimation;
 	rclcpp::Subscription<msgs::msg::Landmark>::SharedPtr sub_irlandmark;
+	rclcpp::Subscription<msgs::msg::Servocommand>::SharedPtr sub_ServoCommand;
 
 	//tf
 	std::shared_ptr<tf2_ros::TransformBroadcaster> servogroup_to_cam;
@@ -152,13 +162,30 @@ public:
 	*/
 	void target_center_callback(const msgs::msg::Landmark::SharedPtr msg);
 
-
 	/*
 	* @brief: This function calculates the target loss
 	* @param: target_center: the target center
 	* @return: the target loss
 	*/
-	Eigen::Vector2d target_loss(cv::Point2f target_center);
+	Eigen::Vector2d target_status2loss(cv::Point2f target_center);
+	Eigen::Vector2d target_loss2status(double loss_x, double loss_y, bool force_flag);
+
+	/*
+	* 
+	*/
+	void target_status2change(Eigen::Vector2d target_image_pos);
+
+	/*
+	* @brief: This function is the callback function for the servo command subscriber
+	* @param: msg: the message received from the servo command subscriber
+	*/
+	void servo_command_callback(const msgs::msg::Servocommand::SharedPtr msg);
+
+	/*
+	* @brief: This function loads the camera configuration
+	* @param: config_path: the path of the camera configuration file
+	*/
+	void loadCameraConfig(const std::string& config_path);
 };
 
 #endif // SINGLESERVOCONTROL_H

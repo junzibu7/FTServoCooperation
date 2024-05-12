@@ -18,6 +18,7 @@ MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 	pub_servo34_command = this->create_publisher<msgs::msg::Servocommand>("/servo34_command", 1);
 	pub_servo56_command = this->create_publisher<msgs::msg::Servocommand>("/servo56_command", 1);
 	pub_servo78_command = this->create_publisher<msgs::msg::Servocommand>("/servo78_command", 1);
+	
 }
 
 void MultiServoNode::target_loss_camA_callback(const msgs::msg::Loss::SharedPtr msg)

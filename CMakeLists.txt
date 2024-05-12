@@ -136,6 +136,7 @@ else()
   target_link_libraries(singleServoControl
     ftservo_Control
     math_tools_lib
+    yaml-cpp
     ${PROJECT_SOURCE_DIR}/include/SCServo/lib_x86/libSCServo.so #x86
   )
 
@@ -203,6 +204,7 @@ else()
 
   install(DIRECTORY 
     launch
+    config
     DESTINATION share/${PROJECT_NAME}
   )
 

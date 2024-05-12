@@ -4,10 +4,13 @@ from launch_ros.actions import Node
 import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 import os
+import yaml
 
 def generate_launch_description():
     # 创建启动器描述
     ld = LaunchDescription()
+
+    camera_config_file = os.path.join(get_package_share_directory('ftservocontrol'), 'config', 'four_camera.yaml')
 
     # 为节点ServoGroup12设置参数
     servo_group_12_params = {
@@ -16,7 +19,9 @@ def generate_launch_description():
         'source_frame': 'EstimationfromcamA',
         'target_frame': 'camA',
         'cam': 'camA',
-        'serial': '/dev/ttyUSB0'
+        'serial': '/dev/ttyUSB0',
+        'up_init': 180,
+        'down_init': 180,
     }
     
     # 为节点ServoGroup34设置参数
@@ -26,7 +31,9 @@ def generate_launch_description():
         'source_frame': 'EstimationfromcamB',
         'target_frame': 'camB',
         'cam': 'camB',
-        'serial': '/dev/ttyUSB1'
+        'serial': '/dev/ttyUSB1',
+        'up_init': 180,
+        'down_init': 180,
     }
 
     # 为节点ServoGroup56设置参数
@@ -36,7 +43,9 @@ def generate_launch_description():
         'source_frame': 'EstimationfromcamC',
         'target_frame': 'camC',
         'cam': 'camC',
-        'serial': '/dev/ttyUSB2'
+        'serial': '/dev/ttyUSB2',
+        'up_init': 180,
+        'down_init': 180,
     }
 
     # 为节点ServoGroup78设置参数
@@ -46,7 +55,9 @@ def generate_launch_description():
         'source_frame': 'EstimationfromcamD',
         'target_frame': 'camD',
         'cam': 'camD',
-        'serial': '/dev/ttyUSB3'
+        'serial': '/dev/ttyUSB3',
+        'up_init': 180,
+        'down_init': 180,
     }
 
     # 添加第一个节点并设置参数
@@ -55,7 +66,7 @@ def generate_launch_description():
         executable='Single_Servogp_Control',
         name='ServoGroup12',
         output='screen',
-        parameters=[servo_group_12_params]
+        parameters=[servo_group_12_params, camera_config_file]
     )
     ld.add_action(servo_group_12)
 
@@ -65,7 +76,7 @@ def generate_launch_description():
         executable='Single_Servogp_Control',
         name='ServoGroup34',
         output='screen',
-        parameters=[servo_group_34_params]
+        parameters=[servo_group_34_params, camera_config_file]
     )
     ld.add_action(servo_group_34)
 
@@ -75,7 +86,7 @@ def generate_launch_description():
         executable='Single_Servogp_Control',
         name='ServoGroup56',
         output='screen',
-        parameters=[servo_group_56_params]
+        parameters=[servo_group_56_params, camera_config_file]
     )
     ld.add_action(servo_group_56)
 
@@ -85,7 +96,7 @@ def generate_launch_description():
         executable='Single_Servogp_Control',
         name='ServoGroup78',
         output='screen',
-        parameters=[servo_group_78_params]
+        parameters=[servo_group_78_params, camera_config_file]
     )
     ld.add_action(servo_group_78)
 
