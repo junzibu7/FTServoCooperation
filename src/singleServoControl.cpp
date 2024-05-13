@@ -259,7 +259,11 @@ void SingleServoNode::servo_command_callback(const msgs::msg::Servocommand::Shar
 {
 	// Move the servo to the target position
 	Eigen::Vector2d target_image_pos = target_loss2status(msg->state_down, msg->state_up, msg->force_flag); 
-	target_status2change(target_image_pos);
+	Eigen::Vector2d target_change = target_status2change(target_image_pos);
+	target_down_change = target_change.x();
+	target_up_change = target_change.y();
+
+	servo_move(down_status + target_down_change, up_status + target_up_change);
 }
 
 void SingleServoNode::loadCameraConfig(const std::string& config_path)
@@ -296,19 +300,26 @@ void SingleServoNode::target_estimation2status()
 	cout << target_status << endl; 
 }
 
-void SingleServoNode::target_status2change(Eigen::Vector2d target_image_pos)
+Eigen::Vector2d SingleServoNode::target_status2change(Eigen::Vector2d target_image_pos)
 {
-	// 计算图像点到相机光心的距离
-	double image_distance = (target_image_pos - Eigen::Vector2d(cx, cy)).norm();
-
-	// 计算相机坐标系下的深度Z
-    double Z = estimation_distance / image_distance;
-
 	// 计算相机坐标系下的点 (X, Y, Z)
     Eigen::Vector3d target_camera_point;
-    target_camera_point[0] = (target_image_pos[0] - cx) * (estimation_distance / Z);
-    target_camera_point[1] = (target_image_pos[1] - cy) * (estimation_distance / Z);
-    target_camera_point[2] = estimation_distance;
+	target_camera_point[0] = estimation_distance;
+    target_camera_point[1] = - (target_image_pos[0] - cx) * estimation_t_x / (target_status.x - cx);
+    target_camera_point[2] = (target_image_pos[1] - cy) * estimation_t_y / (target_status.y - cy);
+
+	//水平夹角theta，垂直夹角phi
+	double theta = 0;
+	double phi = 0;
+	theta = atan(- target_camera_point[1] / target_camera_point[0]) - atan(- estimation_t_y / estimation_t_x);
+	phi = - (atan(target_camera_point[2] / sqrt(pow(target_camera_point[0],2) + pow(target_camera_point[1],2))) - atan(estimation_t_z / sqrt(pow(estimation_t_x,2) + pow(estimation_t_y,2))));
+
+	cout << "theta:" << theta << endl;
+	cout << "phi:" << phi << endl;
+
+	Eigen::Vector2d servo_move(theta, phi);
+	return servo_move;
+
 }
 
 void SingleServoNode::find_transform(const std::string& from_frame, const std::string& to_frame)

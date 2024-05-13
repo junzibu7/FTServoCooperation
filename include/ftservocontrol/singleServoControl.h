@@ -179,7 +179,7 @@ public:
 	/*
 	* 
 	*/
-	void target_status2change(Eigen::Vector2d target_image_pos);
+	Eigen::Vector2d target_status2change(Eigen::Vector2d target_image_pos);
 
 	/*
 	* @brief: This function is the callback function for the servo command subscriber

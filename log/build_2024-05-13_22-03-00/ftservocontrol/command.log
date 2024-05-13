@@ -1,0 +1,2 @@
+Invoking command in '/home/hezijia/foxy_ws/src/ftservocontrol/build/ftservocontrol': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/hezijia/foxy_ws/src/ftservocontrol/build/ftservocontrol -- -j8 -l8
+Invoked command in '/home/hezijia/foxy_ws/src/ftservocontrol/build/ftservocontrol' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/hezijia/foxy_ws/src/ftservocontrol/build/ftservocontrol -- -j8 -l8
