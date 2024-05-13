@@ -31,13 +31,17 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 
 	cout << "id_up:" << id_up << endl;
 	cout << "id_down:" << id_down << endl;
-	cout << "serial:" << serial_str << endl;	
+	cout << "serial:" << serial_str << endl;
+
+	// TF2 Initialization	
+	tf_target_estimation_buffer = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+	tf_target_estimation_listener = std::make_shared<tf2_ros::TransformListener>(*tf_target_estimation_buffer);
 
 	// System Initialization
 	timer_ = this->create_wall_timer(std::chrono::milliseconds(3300), std::bind(&SingleServoNode::T_servogroup_to_camera, this));
 	pub_servogroup_to_cam = this->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
 	pub_target_loss = this->create_publisher<msgs::msg::Loss>("/target_loss_" + cam, 1);
-	sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_center_callback, this, std::placeholders::_1));
+	sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_status_callback, this, std::placeholders::_1));
 	sub_ServoCommand = this->create_subscription<msgs::msg::Servocommand>("servo" + std::to_string(id_down) + std::to_string(id_up) + "_command", 10, std::bind(&SingleServoNode::servo_command_callback, this, std::placeholders::_1));
     servogroup_to_cam = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 	// cout << "System has been initialized!" << endl;
@@ -144,46 +148,36 @@ void SingleServoNode::T_servogroup_to_camera(){
 
 void SingleServoNode::T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped &msg){
 	// Get the transformation from the camera to the estimation
-	target_t_x = msg.transform.translation.x;
-	target_t_y = msg.transform.translation.y;
-	target_t_z = msg.transform.translation.z;
-	target_q_x = msg.transform.rotation.x;
-	target_q_y = msg.transform.rotation.y;
-	target_q_z = msg.transform.rotation.z;
-	target_q_w = msg.transform.rotation.w;
+	estimation_t_x = msg.transform.translation.x;
+	estimation_t_y = msg.transform.translation.y;
+	estimation_t_z = msg.transform.translation.z;
 
 	// Transformation from the camera to the estimation
-	cam_to_estimation.setOrigin(tf2::Vector3(target_t_x, target_t_y, target_t_z));
-	cam_to_estimation.setRotation(tf2::Quaternion(target_q_x, target_q_y, target_q_z, target_q_w));
+	cam_to_estimation.setOrigin(tf2::Vector3(estimation_t_x, estimation_t_y, estimation_t_z));
 }
 
 void SingleServoNode::T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped &msg){
 	// Get the transformation from the camera to the estimation
-	target_t_x = msg.transform.translation.x;
-	target_t_y = msg.transform.translation.y;
-	target_t_z = msg.transform.translation.z;
-	target_q_x = msg.transform.rotation.x;
-	target_q_y = msg.transform.rotation.y;
-	target_q_z = msg.transform.rotation.z;
-	target_q_w = msg.transform.rotation.w;
+	estimation_t_x = msg.transform.translation.x;
+	estimation_t_y = msg.transform.translation.y;
+	estimation_t_z = msg.transform.translation.z;
 
 	// Transformation from the camera to the estimation
-	cam_to_coopestimation.setOrigin(tf2::Vector3(target_t_x, target_t_y, target_t_z));
-	cam_to_coopestimation.setRotation(tf2::Quaternion(target_q_x, target_q_y, target_q_z, target_q_w));
+	cam_to_coopestimation.setOrigin(tf2::Vector3(estimation_t_x, estimation_t_y, estimation_t_z));
 }
 
-void SingleServoNode::target_center_callback(const msgs::msg::Landmark::SharedPtr msg){
+void SingleServoNode::target_status_callback(const msgs::msg::Landmark::SharedPtr msg){
 	// Initialize the target center
-	target_center = cv::Point2f(0, 0);
+	target_status = cv::Point2f(0, 0);
 
 	// Get the target center
 	for (unsigned int i = 0; i < msg->x.size(); i++){
-		target_center.x += msg->x[i] / msg->x.size();
-		target_center.y += msg->y[i] / msg->y.size();
+		target_status.x += msg->x[i] / msg->x.size();
+		target_status.y += msg->y[i] / msg->y.size();
 	}
 
 	// Calculate the target loss
-	Eigen::Vector2d target_loss_cam = target_status2loss(target_center);
+	Eigen::Vector2d target_loss_cam = target_status2loss(target_status);
 	target_loss_msg.header.stamp = nh->now();
 	target_loss_msg.x = target_loss_cam.x();
 	target_loss_msg.y = target_loss_cam.y();
@@ -192,9 +186,9 @@ void SingleServoNode::target_center_callback(const msgs::msg::Landmark::SharedPt
 	force_flag = false;
 }
 
-Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_center){
-	double target_loss_x = (target_center.x - 320) / 320;
-	double target_loss_y = (target_center.y - 240) / 240;
+Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_status){
+	double target_loss_x = (target_status.x - 320) / 320;
+	double target_loss_y = (target_status.y - 240) / 240;
 	// double k1 = 0.5;
 	// double k2 = 5.0;
 	// double c = 1.0;
@@ -265,6 +259,7 @@ void SingleServoNode::servo_command_callback(const msgs::msg::Servocommand::Shar
 {
 	// Move the servo to the target position
 	Eigen::Vector2d target_image_pos = target_loss2status(msg->state_down, msg->state_up, msg->force_flag); 
+	target_status2change(target_image_pos);
 }
 
 void SingleServoNode::loadCameraConfig(const std::string& config_path)
@@ -280,10 +275,54 @@ void SingleServoNode::loadCameraConfig(const std::string& config_path)
 	cx = IR1_camera["cx"].as<double>();
 	cy = IR1_camera["cy"].as<double>();
 
-	// camera_matrix = (cv::Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
+	camera_matrix = (cv::Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
 }
 
-void target_status2change(Eigen::Vector2d target_image_pos)
+void SingleServoNode::target_estimation2status()
 {
-	//ggaggagaggagahhhhhh
+	find_transform(source_frame, target_frame);
+	cv::Vec3d target_estimation = cv::Vec3d(estimation_t_x, estimation_t_y, estimation_t_z);
+
+	// 初始化目标点的矩阵，添加1作为齐次坐标
+    cv::Mat_<double> target_point = (cv::Mat_<double>(4, 1) << target_estimation[0], target_estimation[1], target_estimation[2], 1.0);
+
+	// 投影点到图像平面
+	cv::projectPoints(target_point, cv::Mat(), cv::Mat(), camera_matrix, cv::Mat(), image_point);
+
+	// image_point包含了投影到图像坐标系后的点的坐标
+    target_status.x = image_point.at<double>(0, 0);
+	target_status.y = image_point.at<double>(1, 0);
+
+	cout << target_status << endl; 
 }
+
+void SingleServoNode::target_status2change(Eigen::Vector2d target_image_pos)
+{
+	// 计算图像点到相机光心的距离
+	double image_distance = (target_image_pos - Eigen::Vector2d(cx, cy)).norm();
+
+	// 计算相机坐标系下的深度Z
+    double Z = estimation_distance / image_distance;
+
+	// 计算相机坐标系下的点 (X, Y, Z)
+    Eigen::Vector3d target_camera_point;
+    target_camera_point[0] = (target_image_pos[0] - cx) * (estimation_distance / Z);
+    target_camera_point[1] = (target_image_pos[1] - cy) * (estimation_distance / Z);
+    target_camera_point[2] = estimation_distance;
+}
+
+void SingleServoNode::find_transform(const std::string& from_frame, const std::string& to_frame)
+  {
+    try {
+      // 尝试查找从from_frame到to_frame的变换
+      geometry_msgs::msg::TransformStamped transform;
+      transform = tf_target_estimation_buffer->lookupTransform(from_frame, to_frame, rclcpp::Time(0));
+
+	  estimation_t_x = transform.transform.translation.x;
+	  estimation_t_y = transform.transform.translation.y;
+	  estimation_t_z = transform.transform.translation.z;
+	  estimation_distance = sqrt(pow(estimation_t_x, 2) + pow(estimation_t_y, 2) + pow(estimation_t_z, 2));
+    } catch (const tf2::TransformException& ex) {
+      RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
+    }
+  }

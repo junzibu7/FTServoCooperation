@@ -85,15 +85,16 @@ public:
 	bool force_flag = false;
 
 	//Target Parameters
+	double estimation_t_x = 0;
+	double estimation_t_y = 0;
+	double estimation_t_z = 0;
+	double estimation_distance = 0;
 	double target_t_x = 0;
 	double target_t_y = 0;
 	double target_t_z = 0;
-	double target_q_x = 0;
-	double target_q_y = 0;
-	double target_q_z = 0;
-	double target_q_w = 0;
-    cv::Point2f target_center = cv::Point2f(0, 0);
+    cv::Point2f target_status = cv::Point2f(0, 0);
 	msgs::msg::Loss target_loss_msg;
+	cv::Mat image_point;
 
 	//Camera Parameters
 	double fx, fy, cx, cy;
@@ -121,6 +122,9 @@ public:
 	tf2::Stamped<tf2::Transform> cam_to_estimation;
 	tf2::Stamped<tf2::Transform> cam_to_coopestimation;
 	geometry_msgs::msg::TransformStamped msg_servogroup_to_cam;
+	std::shared_ptr<tf2_ros::Buffer> tf_target_estimation_buffer;
+	std::shared_ptr<tf2_ros::TransformListener> tf_target_estimation_listener;
+	int count_; // 计数器，用于控制查询的频率
 
 //================================== function declarations ==================================//
 	SingleServoNode(const std::string &node_name);
@@ -160,15 +164,17 @@ public:
 	* @brief: This function is the callback function for the irlandmark subscriber
 	* @param: msg: the message received from the target centre subscriber
 	*/
-	void target_center_callback(const msgs::msg::Landmark::SharedPtr msg);
+	void target_status_callback(const msgs::msg::Landmark::SharedPtr msg);
 
 	/*
 	* @brief: This function calculates the target loss
-	* @param: target_center: the target center
+	* @param: target_status: the target center
 	* @return: the target loss
 	*/
-	Eigen::Vector2d target_status2loss(cv::Point2f target_center);
+	Eigen::Vector2d target_status2loss(cv::Point2f target_status);
 	Eigen::Vector2d target_loss2status(double loss_x, double loss_y, bool force_flag);
+
+	void target_estimation2status();
 
 	/*
 	* 
@@ -186,6 +192,8 @@ public:
 	* @param: config_path: the path of the camera configuration file
 	*/
 	void loadCameraConfig(const std::string& config_path);
+
+	void find_transform(const std::string& from_frame, const std::string& to_frame);
 };
 
 #endif // SINGLESERVOCONTROL_H
