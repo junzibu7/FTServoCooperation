@@ -51,14 +51,16 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 {
 	nh = nh_;
 	
-	const char *serial_ = serial_str.c_str();
-	
-	// Servo Initialization
-	// _servo.init(serial_, 2, nh, {id_down, id_up});
+	#ifdef SERVO_ENABLE
+		const char *serial_ = serial_str.c_str();
+
+		// Servo Initialization
+		_servo.init(serial_, 2, nh, {id_down, id_up});
 
 
-	// Move the servo to the initial position
-	// servo_move(down_init, up_init);
+		// Move the servo to the initial position
+		servo_move(down_init, up_init);
+	#endif
 
 	// std::this_thread::sleep_for(1s);
 
@@ -105,9 +107,11 @@ void SingleServoNode::servo_move(double target_down_status, double target_up_sta
 }
 
 void SingleServoNode::T_servogroup_to_camera(){
-	// Get the status of the servos
-	// down_status = _servo.read(id_down);
-	// up_status = _servo.read(id_up);
+	#ifdef SERVO_ENABLE
+		// Get the status of the servos
+		down_status = _servo.read(id_down);
+		up_status = _servo.read(id_up);	
+	#endif	
 
 	// cout << "down_status:" << down_status << endl;
 	// cout << "up_status:" << up_status << endl;
@@ -127,7 +131,7 @@ void SingleServoNode::T_servogroup_to_camera(){
 
 	// Transformation from the servo group to the camera
 	T_servogroup_to_cam = T_DU * T_UB * T_BC;
-	// cout << T_servogroup_to_cam << endl;
+	cout << T_servogroup_to_cam << endl;
 
 	// Publish the transformation from the servo group to the camera
 	msg_servogroup_to_cam.header.stamp = nh->now();
@@ -280,6 +284,7 @@ void SingleServoNode::loadCameraConfig(const std::string& config_path)
 	cy = IR1_camera["cy"].as<double>();
 
 	camera_matrix = (cv::Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
+	// cout << "camera_matrix" << camera_matrix << endl;
 }
 
 void SingleServoNode::target_estimation2status()
