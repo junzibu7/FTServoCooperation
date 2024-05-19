@@ -10,8 +10,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-set(SERVO_ENABLE false)
-
 if($ENV{ROS_VERSION} EQUAL 1)
 #================================= ROS1 ==================================
   message("Version : ROS1")
@@ -103,6 +101,7 @@ else()
     ${tf2_INCLUDE_DIRS}
   )
   add_definitions(${EIGEN_DEFINITIONS})
+  add_definitions(-DSERVO_ENABLE=true)
 
   add_library(ftservo_Control SHARED src/FEETECHservo.cpp)
   ament_target_dependencies(ftservo_Control

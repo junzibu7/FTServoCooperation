@@ -33,7 +33,7 @@ def generate_launch_description():
         'target_frame': 'camB',
         'cam': 'camB',
         'serial': '/dev/serial_servogroup34',
-        'up_init': 180,
+        'up_init': 155,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
@@ -59,7 +59,7 @@ def generate_launch_description():
         'target_frame': 'camD',
         'cam': 'camD',
         'serial': '/dev/serial_servogroup78',
-        'up_init': 180,
+        'up_init': 155,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
