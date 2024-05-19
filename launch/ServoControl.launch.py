@@ -112,5 +112,14 @@ def generate_launch_description():
     )
     ld.add_action(base_to_servogroupxx)
 
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        arguments=['-d', os.path.join(get_package_share_directory('ftservocontrol'), 'rviz', 'servocontrol.rviz')],
+        output='screen'
+    )
+    ld.add_action(rviz)
+
     # 返回启动器描述
     return ld
