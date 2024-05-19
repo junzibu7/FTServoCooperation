@@ -112,6 +112,13 @@ def generate_launch_description():
     )
     ld.add_action(base_to_servogroupxx)
 
+    Target_Trajectory_Simulation = Node(
+        package='ftservocontrol',
+        executable='Target_Trajectory_Simulation',
+        name='trajectory_node',
+    )
+    ld.add_action(Target_Trajectory_Simulation)
+
     rviz = Node(
         package='rviz2',
         executable='rviz2',
