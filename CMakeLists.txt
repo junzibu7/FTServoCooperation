@@ -101,7 +101,6 @@ else()
     ${tf2_INCLUDE_DIRS}
   )
   add_definitions(${EIGEN_DEFINITIONS})
-  add_definitions(-DSERVO_ENABLE=true)
 
   add_library(ftservo_Control SHARED src/FEETECHservo.cpp)
   ament_target_dependencies(ftservo_Control
@@ -183,6 +182,12 @@ else()
     multiServoControl
   )
 
+  add_executable(base2servogroup src/base2servogroup.cpp)
+  ament_target_dependencies(base2servogroup rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(base2servogroup
+    singleServoControl
+  )
+
 
   install(
     DIRECTORY include/SCServo/lib_x86/
@@ -198,6 +203,7 @@ else()
     initialize
     Single_Servogp_Control
     Multi_Servogp_Control
+    base2servogroup
     RUNTIME DESTINATION lib/${PROJECT_NAME}
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
   )

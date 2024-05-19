@@ -54,6 +54,8 @@
 using namespace std::chrono_literals;
 using namespace std;
 
+// #define SERVO_ENABLE true
+
 class SingleServoNode: public rclcpp::Node
 {
 public:

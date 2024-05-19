@@ -38,7 +38,7 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	tf_target_estimation_listener = std::make_shared<tf2_ros::TransformListener>(*tf_target_estimation_buffer);
 
 	// System Initialization
-	timer_ = this->create_wall_timer(std::chrono::milliseconds(3300), std::bind(&SingleServoNode::T_servogroup_to_camera, this));
+	timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&SingleServoNode::T_servogroup_to_camera, this));
 	pub_servogroup_to_cam = this->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
 	pub_target_loss = this->create_publisher<msgs::msg::Loss>("/target_loss_" + cam, 1);
 	sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_status_callback, this, std::placeholders::_1));
@@ -51,16 +51,16 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 {
 	nh = nh_;
 	
-	// #ifdef SERVO_ENABLE
-		const char *serial_ = serial_str.c_str();
+	#ifdef SERVO_ENABLE
+	const char *serial_ = serial_str.c_str();
 
-		// Servo Initialization
-		_servo.init(serial_, 2, nh, {id_down, id_up});
+	// Servo Initialization
+	_servo.init(serial_, 2, nh, {id_down, id_up});
 
 
-		// Move the servo to the initial position
-		servo_move(down_init, up_init);
-	// #endif
+	// Move the servo to the initial position
+	servo_move(down_init, up_init);
+	#endif
 
 	// std::this_thread::sleep_for(1s);
 
@@ -107,11 +107,11 @@ void SingleServoNode::servo_move(double target_down_status, double target_up_sta
 }
 
 void SingleServoNode::T_servogroup_to_camera(){
-	// #ifdef SERVO_ENABLE
-		// Get the status of the servos
-		down_status = _servo.read(id_down);
-		up_status = _servo.read(id_up);	
-	// #endif	
+	#ifdef SERVO_ENABLE
+	// Get the status of the servos
+	down_status = _servo.read(id_down);
+	up_status = _servo.read(id_up);	
+	#endif	
 
 	// cout << "down_status:" << down_status << endl;
 	// cout << "up_status:" << up_status << endl;
@@ -131,9 +131,7 @@ void SingleServoNode::T_servogroup_to_camera(){
 
 	// Transformation from the servo group to the camera
 	T_servogroup_to_cam = T_DU * T_UB * T_BC;
-	#ifdef SERVO_ENABLE
-		cout << T_servogroup_to_cam << endl;
-	#endif	
+	// cout << T_servogroup_to_cam << endl;
 
 	// Publish the transformation from the servo group to the camera
 	msg_servogroup_to_cam.header.stamp = nh->now();

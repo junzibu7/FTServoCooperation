@@ -33,7 +33,7 @@ def generate_launch_description():
         'target_frame': 'camB',
         'cam': 'camB',
         'serial': '/dev/serial_servogroup34',
-        'up_init': 155,
+        'up_init': 180,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
@@ -59,7 +59,7 @@ def generate_launch_description():
         'target_frame': 'camD',
         'cam': 'camD',
         'serial': '/dev/serial_servogroup78',
-        'up_init': 155,
+        'up_init': 180,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
@@ -103,6 +103,14 @@ def generate_launch_description():
         parameters=[servo_group_78_params]
     )
     ld.add_action(servo_group_78)
+
+    # 构建base到servogroupxx的tf树
+    base_to_servogroupxx = Node(
+        package='ftservocontrol',
+        executable='base2servogroup',
+        name='base2servogroup_node',
+    )
+    ld.add_action(base_to_servogroupxx)
 
     # 返回启动器描述
     return ld
