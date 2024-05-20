@@ -29,9 +29,9 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 
     loadCameraConfig(camera_config_file);
 
-	cout << "id_up:" << id_up << endl;
-	cout << "id_down:" << id_down << endl;
-	cout << "serial:" << serial_str << endl;
+	// cout << "id_up:" << id_up << endl;
+	// cout << "id_down:" << id_down << endl;
+	// cout << "serial:" << serial_str << endl;
 
 	// TF2 Initialization	
 	tf_target_estimation_buffer = std::make_shared<tf2_ros::Buffer>(this->get_clock());
@@ -41,7 +41,8 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&SingleServoNode::T_servogroup_to_camera, this));
 	pub_servogroup_to_cam = this->create_publisher<geometry_msgs::msg::TransformStamped>("/T_servogroup" + std::to_string(id_down) + std::to_string(id_up) + "_to_" + cam, 1);
 	pub_target_loss = this->create_publisher<msgs::msg::Loss>("/target_loss_" + cam, 1);
-	sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_status_callback, this, std::placeholders::_1));
+	// sub_irlandmark = this->create_subscription<msgs::msg::Landmark>("/" + cam + "/single_cam_process_ros/ir_mono/marker_pixel", 10, std::bind(&SingleServoNode::target_status_callback, this, std::placeholders::_1));
+	sub_trajectory = this->create_subscription<geometry_msgs::msg::TransformStamped>("/trajectory", 10, std::bind(&SingleServoNode::T_cam_to_coopestimation_callback, this, std::placeholders::_1));
 	sub_ServoCommand = this->create_subscription<msgs::msg::Servocommand>("servo" + std::to_string(id_down) + std::to_string(id_up) + "_command", 10, std::bind(&SingleServoNode::servo_command_callback, this, std::placeholders::_1));
     servogroup_to_cam = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 	// cout << "System has been initialized!" << endl;
@@ -64,8 +65,8 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 
 	// std::this_thread::sleep_for(1s);
 
-	// down_status = _servo.read(id_down);
-	// up_status = _servo.read(id_up);
+	down_status = down_init;
+	up_status = up_init;
 
 	// cout << "down_status:" << down_status << endl;
 	// cout << "up_status:" << up_status << endl;
@@ -150,24 +151,42 @@ void SingleServoNode::T_servogroup_to_camera(){
 	servogroup_to_cam->sendTransform(msg_servogroup_to_cam);
 }
 
-void SingleServoNode::T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped &msg){
+void SingleServoNode::T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped::SharedPtr msg){
 	// Get the transformation from the camera to the estimation
-	estimation_t_x = msg.transform.translation.x;
-	estimation_t_y = msg.transform.translation.y;
-	estimation_t_z = msg.transform.translation.z;
+	estimation_t_x = msg->transform.translation.x;
+	estimation_t_y = msg->transform.translation.y;
+	estimation_t_z = msg->transform.translation.z;
 
 	// Transformation from the camera to the estimation
 	cam_to_estimation.setOrigin(tf2::Vector3(estimation_t_x, estimation_t_y, estimation_t_z));
 }
 
-void SingleServoNode::T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped &msg){
-	// Get the transformation from the camera to the estimation
-	estimation_t_x = msg.transform.translation.x;
-	estimation_t_y = msg.transform.translation.y;
-	estimation_t_z = msg.transform.translation.z;
+void SingleServoNode::T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped::SharedPtr msg){
+	T_servogroup_to_camera();
 
-	// Transformation from the camera to the estimation
-	cam_to_coopestimation.setOrigin(tf2::Vector3(estimation_t_x, estimation_t_y, estimation_t_z));
+	// Get the transformation from the camera to the estimation
+	try {
+        // 使用TransformListener查询变换
+        geometry_msgs::msg::TransformStamped transformStamped;
+        transformStamped = tf_target_estimation_buffer->lookupTransform(cam, "target", rclcpp::Time(0));
+
+        // 从transformStamped中提取变换信息
+        estimation_t_x = transformStamped.transform.translation.x;
+        estimation_t_y = transformStamped.transform.translation.y;
+        estimation_t_z = transformStamped.transform.translation.z;
+    } catch (const tf2::TransformException& ex) {
+        // RCLCPP_ERROR(nh->get_logger(), "Transform error: %s", ex.what());
+        return;
+    }
+
+	// cout << cam+ "_estimation_t_x:" << estimation_t_x << endl;	
+	// cout << cam+ "_estimation_t_y:" << estimation_t_y << endl;
+	// cout << cam+ "_estimation_t_z:" << estimation_t_z << endl;
+
+	// // Transformation from the camera to the estimation
+	// cam_to_coopestimation.setOrigin(tf2::Vector3(estimation_t_x, estimation_t_y, estimation_t_z));
+
+	// target_estimation2status();
 }
 
 void SingleServoNode::target_status_callback(const msgs::msg::Landmark::SharedPtr msg){
@@ -302,7 +321,7 @@ void SingleServoNode::target_estimation2status()
     target_status.x = image_point.at<double>(0, 0);
 	target_status.y = image_point.at<double>(1, 0);
 
-	cout << target_status << endl; 
+	cout << cam + "_target_status:" << target_status << endl; 
 }
 
 Eigen::Vector2d SingleServoNode::target_status2change(Eigen::Vector2d target_image_pos)

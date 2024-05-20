@@ -116,6 +116,7 @@ public:
 	rclcpp::Publisher<msgs::msg::Loss>::SharedPtr pub_target_loss;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_estimation;
 	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_cam_to_coopestimation;
+	rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr sub_trajectory;
 	rclcpp::Subscription<msgs::msg::Landmark>::SharedPtr sub_irlandmark;
 	rclcpp::Subscription<msgs::msg::Servocommand>::SharedPtr sub_ServoCommand;
 
@@ -153,13 +154,13 @@ public:
 	* @brief: This function is the callback function for the camera to estimation subscriber
 	* @param: msg: the message received from the camera to estimation subscriber
 	*/
-	void T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped &msg);
+	void T_cam_to_estimation_callback(const geometry_msgs::msg::TransformStamped::SharedPtr msg);
 
 	/*
 	* @brief: This function is the callback function for the camera to coop estimation subscriber
 	* @param: msg: the message received from the camera to coop estimation subscriber
 	*/
-	void T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped &msg);
+	void T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped::SharedPtr msg);
 
 
 	/*

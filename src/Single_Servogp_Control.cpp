@@ -18,7 +18,5 @@ int main(int argc, char *argv[])
 
         // std::this_thread::sleep_for(0.1s);
     }
-    // rclcpp::spin(Sg12_node);
-    // rclcpp::shutdown();
     return 0;
 }

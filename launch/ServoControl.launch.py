@@ -16,7 +16,7 @@ def generate_launch_description():
     servo_group_12_params = {
         'id_up': 2,
         'id_down': 1,
-        'source_frame': 'EstimationfromcamA',
+        'source_frame': 'target',
         'target_frame': 'camA',
         'cam': 'camA',
         'serial': '/dev/serial_servogroup12',
@@ -29,11 +29,11 @@ def generate_launch_description():
     servo_group_34_params = {
         'id_up': 4,
         'id_down': 3,
-        'source_frame': 'EstimationfromcamB',
+        'source_frame': 'target',
         'target_frame': 'camB',
         'cam': 'camB',
         'serial': '/dev/serial_servogroup34',
-        'up_init': 180,
+        'up_init': 155,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
@@ -42,7 +42,7 @@ def generate_launch_description():
     servo_group_56_params = {
         'id_up': 6,
         'id_down': 5,
-        'source_frame': 'EstimationfromcamC',
+        'source_frame': 'target',
         'target_frame': 'camC',
         'cam': 'camC',
         'serial': '/dev/serial_servogroup56',
@@ -55,11 +55,11 @@ def generate_launch_description():
     servo_group_78_params = {
         'id_up': 8,
         'id_down': 7,
-        'source_frame': 'EstimationfromcamD',
+        'source_frame': 'target',
         'target_frame': 'camD',
         'cam': 'camD',
         'serial': '/dev/serial_servogroup78',
-        'up_init': 180,
+        'up_init': 155,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
@@ -104,29 +104,29 @@ def generate_launch_description():
     )
     ld.add_action(servo_group_78)
 
-    # 构建base到servogroupxx的tf树
-    base_to_servogroupxx = Node(
-        package='ftservocontrol',
-        executable='base2servogroup',
-        name='base2servogroup_node',
-    )
-    ld.add_action(base_to_servogroupxx)
+    # # 构建base到servogroupxx的tf树
+    # base_to_servogroupxx = Node(
+    #     package='ftservocontrol',
+    #     executable='base2servogroup',
+    #     name='base2servogroup_node',
+    # )
+    # ld.add_action(base_to_servogroupxx)
 
-    Target_Trajectory_Simulation = Node(
-        package='ftservocontrol',
-        executable='Target_Trajectory_Simulation',
-        name='trajectory_node',
-    )
-    ld.add_action(Target_Trajectory_Simulation)
+    # Target_Trajectory_Simulation = Node(
+    #     package='ftservocontrol',
+    #     executable='Target_Trajectory_Simulation',
+    #     name='trajectory_node',
+    # )
+    # ld.add_action(Target_Trajectory_Simulation)
 
-    rviz = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', os.path.join(get_package_share_directory('ftservocontrol'), 'rviz', 'servocontrol.rviz')],
-        output='screen'
-    )
-    ld.add_action(rviz)
+    # rviz = Node(
+    #     package='rviz2',
+    #     executable='rviz2',
+    #     name='rviz2',
+    #     arguments=['-d', os.path.join(get_package_share_directory('ftservocontrol'), 'rviz', 'servocontrol.rviz')],
+    #     output='screen'
+    # )
+    # ld.add_action(rviz)
 
     # 返回启动器描述
     return ld
