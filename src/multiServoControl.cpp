@@ -7,6 +7,7 @@ using namespace std;
 MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 {
 	// Basic Parameters	
+	timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&MultiServoNode::calculate_control_signal, this));
 
 	// System Initialization
 	sub_target_loss_camA = this->create_subscription<msgs::msg::Loss>("/target_loss_camA", 10, std::bind(&MultiServoNode::target_loss_camA_callback, this, std::placeholders::_1));
@@ -18,7 +19,6 @@ MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 	pub_servo34_command = this->create_publisher<msgs::msg::Servocommand>("/servo34_command", 1);
 	pub_servo56_command = this->create_publisher<msgs::msg::Servocommand>("/servo56_command", 1);
 	pub_servo78_command = this->create_publisher<msgs::msg::Servocommand>("/servo78_command", 1);
-	
 }
 
 void MultiServoNode::target_loss_camA_callback(const msgs::msg::Loss::SharedPtr msg)
@@ -51,8 +51,10 @@ void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr 
 
 void MultiServoNode::calculate_control_signal()
 {
+	// RCLCPP_INFO(this->get_logger(), "Calculating Control Signal!");
+
 	// Calculate k = control / loss
-	K = (R + iter_B.transpose()*Q*iter_B + S.transpose()*H*S).inverse()*iter_B.transpose()*Q*iter_A;
+	K = (R + iter_B.transpose()*Q*iter_B).inverse()*iter_B.transpose()*Q*iter_A;
 
 	servo_cur = K * loss_cur;
 
@@ -60,11 +62,10 @@ void MultiServoNode::calculate_control_signal()
 
 	min_cost_solve();
 
-	K = (R + iter_B_buf.transpose()*Q*iter_B_buf + S.transpose()*H*S).inverse()*iter_B_buf.transpose()*Q*iter_A;
+	K = (R + iter_B_buf.transpose()*Q*iter_B_buf).inverse()*iter_B_buf.transpose()*Q*iter_A;
 	servo_cur = K * loss_cur;
 
 	loss_nex = iter_A * loss_cur + iter_B_buf * servo_cur;
-	servo_vel = S * K * loss_cur;
 
 	servo12_command.state_down = loss_nex(0);
 	servo12_command.state_up = loss_nex(1);
@@ -75,15 +76,6 @@ void MultiServoNode::calculate_control_signal()
 	servo78_command.state_down = loss_nex(6);
 	servo78_command.state_up = loss_nex(7);
 
-	servo12_command.velocity_down = servo_vel(0);
-	servo12_command.velocity_up = servo_vel(1);
-	servo34_command.velocity_down = servo_vel(2);
-	servo34_command.velocity_up = servo_vel(3);
-	servo56_command.velocity_down = servo_vel(4);
-	servo56_command.velocity_up = servo_vel(5);
-	servo78_command.velocity_down = servo_vel(6);
-	servo78_command.velocity_up = servo_vel(7);
-
 	servo12_command.force_flag = camA_force_flag;
 	servo34_command.force_flag = camB_force_flag;
 	servo56_command.force_flag = camC_force_flag;
@@ -93,6 +85,8 @@ void MultiServoNode::calculate_control_signal()
 	pub_servo34_command->publish(servo34_command);
 	pub_servo56_command->publish(servo56_command);
 	pub_servo78_command->publish(servo78_command);
+
+	// RCLCPP_INFO(this->get_logger(), "Calculated Control Signal sent out!");
 
 }
 

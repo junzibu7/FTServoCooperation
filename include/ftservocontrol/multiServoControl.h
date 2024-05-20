@@ -41,6 +41,7 @@ public:
 
 
 	//Publishers and Subscribers
+	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camA;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camB;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camC;

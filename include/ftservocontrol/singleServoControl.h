@@ -95,12 +95,15 @@ public:
 	double target_t_y = 0;
 	double target_t_z = 0;
     cv::Point2f target_status = cv::Point2f(0, 0);
+	Eigen::Vector2d target_loss;
 	msgs::msg::Loss target_loss_msg;
-	cv::Mat image_point;
+	vector<cv::Point3f> target_point;
+	vector<cv::Point2f> image_point;
 
 	//Camera Parameters
 	double fx, fy, cx, cy;
 	cv::Mat camera_matrix;
+	cv::Mat distortion_coefficients;
 
 	//Servo Transforms
 	Eigen::Matrix4Xd T_DU = Eigen::Matrix4d::Identity();

@@ -162,31 +162,19 @@ void SingleServoNode::T_cam_to_estimation_callback(const geometry_msgs::msg::Tra
 }
 
 void SingleServoNode::T_cam_to_coopestimation_callback(const geometry_msgs::msg::TransformStamped::SharedPtr msg){
-	T_servogroup_to_camera();
-
 	// Get the transformation from the camera to the estimation
-	try {
-        // 使用TransformListener查询变换
-        geometry_msgs::msg::TransformStamped transformStamped;
-        transformStamped = tf_target_estimation_buffer->lookupTransform(cam, "target", rclcpp::Time(0));
+	rclcpp::Time time = msg->header.stamp;
 
-        // 从transformStamped中提取变换信息
-        estimation_t_x = transformStamped.transform.translation.x;
-        estimation_t_y = transformStamped.transform.translation.y;
-        estimation_t_z = transformStamped.transform.translation.z;
-    } catch (const tf2::TransformException& ex) {
-        // RCLCPP_ERROR(nh->get_logger(), "Transform error: %s", ex.what());
-        return;
-    }
+	target_estimation2status();
 
-	// cout << cam+ "_estimation_t_x:" << estimation_t_x << endl;	
-	// cout << cam+ "_estimation_t_y:" << estimation_t_y << endl;
-	// cout << cam+ "_estimation_t_z:" << estimation_t_z << endl;
-
-	// // Transformation from the camera to the estimation
-	// cam_to_coopestimation.setOrigin(tf2::Vector3(estimation_t_x, estimation_t_y, estimation_t_z));
-
-	// target_estimation2status();
+	// Calculate the target loss
+	Eigen::Vector2d target_loss_cam = target_status2loss(target_status);
+	target_loss_msg.header.stamp = nh->now();
+	target_loss_msg.x = target_loss_cam.x();
+	target_loss_msg.y = target_loss_cam.y();
+	target_loss_msg.force_flag = force_flag;
+	pub_target_loss->publish(target_loss_msg);
+	force_flag = false;
 }
 
 void SingleServoNode::target_status_callback(const msgs::msg::Landmark::SharedPtr msg){
@@ -212,35 +200,9 @@ void SingleServoNode::target_status_callback(const msgs::msg::Landmark::SharedPt
 Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_status){
 	double target_loss_x = (target_status.x - 320) / 320;
 	double target_loss_y = (target_status.y - 240) / 240;
-	// double k1 = 0.5;
-	// double k2 = 5.0;
-	// double c = 1.0;
 
 	// Calculate the target loss
 	Eigen::Vector2d target_loss;
-
-	// // linear loss version
-	// if((abs(target_loss_x) >= 0.0) && (abs(target_loss_x) < 0.1)){
-	// 	target_loss.x() = 0;
-	// }else if((abs(target_loss_x) >= 0.1) && (abs(target_loss_x) < 0.7)){
-	// 	target_loss.x() = k1 * (target_loss_x - 0.1);
-	// }else if((abs(target_loss_x) >= 0.7) && (abs(target_loss_x) < 1.2)){
-	// 	target_loss.x() = k2 * (target_loss_x - 0.7);
-	// }else{
-	// 	target_loss.x() = c;
-	// 	force_flag = true;
-	// }
-
-	// if((abs(target_loss_y) >= 0.0) && (abs(target_loss_y) < 0.1)){
-	// 	target_loss.y() = 0;
-	// }else if((abs(target_loss_y) >= 0.1) && (abs(target_loss_y) < 0.7)){
-	// 	target_loss.y() = k1 * (target_loss_y - 0.1);
-	// }else if((abs(target_loss_y) >= 0.7) && (abs(target_loss_y) < 1.2)){
-	// 	target_loss.y() = k2 * (target_loss_y - 0.7);
-	// }else{
-	// 	target_loss.y() = c;
-	// 	force_flag = true;
-	// }
 
 	//cubic loss version
 	target_loss.x() = 10 * pow(target_loss_x, 3);
@@ -261,6 +223,8 @@ Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_status){
 		target_loss.y() = -3;
 		force_flag = true;
 	}
+
+	// cout << cam + "_target_loss:" << target_loss << endl;
 
 	return target_loss;
 }
@@ -286,7 +250,12 @@ void SingleServoNode::servo_command_callback(const msgs::msg::Servocommand::Shar
 	target_down_change = target_change.x();
 	target_up_change = target_change.y();
 
+	#ifdef SERVO_ENABLE
 	servo_move(down_status + target_down_change, up_status + target_up_change);
+	#else
+	// down_status += target_down_change;
+	// up_status += target_up_change;
+	#endif
 }
 
 void SingleServoNode::loadCameraConfig(const std::string& config_path)
@@ -304,24 +273,48 @@ void SingleServoNode::loadCameraConfig(const std::string& config_path)
 
 	camera_matrix = (cv::Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
 	// cout << "camera_matrix" << camera_matrix << endl;
+
+	// 获取畸变参数 D
+    auto D = IR1_camera["D"].as<std::vector<double>>();
+	distortion_coefficients = cv::Mat(D).clone();
+	// cout << "distortion_coefficients" << distortion_coefficients << endl;
 }
 
 void SingleServoNode::target_estimation2status()
 {
 	find_transform(source_frame, target_frame);
-	cv::Vec3d target_estimation = cv::Vec3d(estimation_t_x, estimation_t_y, estimation_t_z);
 
-	// 初始化目标点的矩阵，添加1作为齐次坐标
-    cv::Mat_<double> target_point = (cv::Mat_<double>(4, 1) << target_estimation[0], target_estimation[1], target_estimation[2], 1.0);
+	// 初始化目标点和图像点
+	target_point.clear();
+	image_point.clear();
+
+	// 初始化目标点的矩阵
+	cv::Point3f real_point;
+	real_point.x = - estimation_t_y;
+	real_point.y = - estimation_t_z;
+	real_point.z = + estimation_t_x;
+    target_point.push_back(real_point);
+
+	// cout << "target_point:" << target_point << endl;
+
+	// 初始化相关参数矩阵
+	cv::Mat tVec(3, 1, cv::DataType<double>::type); // Translation vector
+    tVec.at<double>(0) = 0.0;
+    tVec.at<double>(1) = 0.0;
+    tVec.at<double>(2) = 0.0;
+
+	cv::Mat rotationMat = cv::Mat::eye(3, 3, CV_64F); // Rotation Matrix
+    cv::Mat rVec; // Rotation vector
+	cv::Rodrigues(rotationMat, rVec);// 转换为旋转向量
 
 	// 投影点到图像平面
-	cv::projectPoints(target_point, cv::Mat(), cv::Mat(), camera_matrix, cv::Mat(), image_point);
-
+	cv::projectPoints(target_point, rVec, tVec, camera_matrix, distortion_coefficients, image_point);
+	
 	// image_point包含了投影到图像坐标系后的点的坐标
-    target_status.x = image_point.at<double>(0, 0);
-	target_status.y = image_point.at<double>(1, 0);
+    target_status.x = image_point[0].x;
+	target_status.y = image_point[0].y;
 
-	cout << cam + "_target_status:" << target_status << endl; 
+	// cout << cam + "_target_status:" << target_status << endl; 
 }
 
 Eigen::Vector2d SingleServoNode::target_status2change(Eigen::Vector2d target_image_pos)
@@ -341,23 +334,28 @@ Eigen::Vector2d SingleServoNode::target_status2change(Eigen::Vector2d target_ima
 	cout << "theta:" << theta << endl;
 	cout << "phi:" << phi << endl;
 
-	Eigen::Vector2d servo_move(theta, phi);
-	return servo_move;
+	Eigen::Vector2d servo_move_target(theta, phi);
+	return servo_move_target;
 
 }
 
 void SingleServoNode::find_transform(const std::string& from_frame, const std::string& to_frame)
   {
     try {
-      // 尝试查找从from_frame到to_frame的变换
-      geometry_msgs::msg::TransformStamped transform;
-      transform = tf_target_estimation_buffer->lookupTransform(from_frame, to_frame, rclcpp::Time(0));
+		// 尝试查找从from_frame到to_frame的变换
+		geometry_msgs::msg::TransformStamped transform;
+		transform = tf_target_estimation_buffer->lookupTransform(from_frame, to_frame, rclcpp::Time(0.3));
 
-	  estimation_t_x = transform.transform.translation.x;
-	  estimation_t_y = transform.transform.translation.y;
-	  estimation_t_z = transform.transform.translation.z;
-	  estimation_distance = sqrt(pow(estimation_t_x, 2) + pow(estimation_t_y, 2) + pow(estimation_t_z, 2));
+		estimation_t_x = transform.transform.translation.x;
+		estimation_t_y = transform.transform.translation.y;
+		estimation_t_z = transform.transform.translation.z;
+		estimation_distance = sqrt(pow(estimation_t_x, 2) + pow(estimation_t_y, 2) + pow(estimation_t_z, 2));
     } catch (const tf2::TransformException& ex) {
-      RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
+      	// RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
     }
+
+	// cout << cam+ "_estimation_t_x:" << estimation_t_x << endl;	
+	// cout << cam+ "_estimation_t_y:" << estimation_t_y << endl;
+	// cout << cam+ "_estimation_t_z:" << estimation_t_z << endl;
+
   }

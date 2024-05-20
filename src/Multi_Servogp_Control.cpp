@@ -7,12 +7,10 @@ int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
     // Create node
-    auto MulSC_node = std::make_shared<MultiServoNode>("MultiServoControl");
+    auto MulSC_node = std::make_shared<MultiServoNode>("MultiServogpControl");
     
-
     while(rclcpp::ok())
     {
-        MulSC_node->calculate_control_signal();
         rclcpp::spin_some(MulSC_node);
     }
     rclcpp::shutdown();

@@ -16,8 +16,8 @@ def generate_launch_description():
     servo_group_12_params = {
         'id_up': 2,
         'id_down': 1,
-        'source_frame': 'target',
-        'target_frame': 'camA',
+        'source_frame': 'camA',
+        'target_frame': 'target',
         'cam': 'camA',
         'serial': '/dev/serial_servogroup12',
         'up_init': 180,
@@ -29,8 +29,8 @@ def generate_launch_description():
     servo_group_34_params = {
         'id_up': 4,
         'id_down': 3,
-        'source_frame': 'target',
-        'target_frame': 'camB',
+        'source_frame': 'camB',
+        'target_frame': 'target',
         'cam': 'camB',
         'serial': '/dev/serial_servogroup34',
         'up_init': 155,
@@ -42,8 +42,8 @@ def generate_launch_description():
     servo_group_56_params = {
         'id_up': 6,
         'id_down': 5,
-        'source_frame': 'target',
-        'target_frame': 'camC',
+        'source_frame': 'camC',
+        'target_frame': 'target',
         'cam': 'camC',
         'serial': '/dev/serial_servogroup56',
         'up_init': 180,
@@ -55,8 +55,8 @@ def generate_launch_description():
     servo_group_78_params = {
         'id_up': 8,
         'id_down': 7,
-        'source_frame': 'target',
-        'target_frame': 'camD',
+        'source_frame': 'camD',
+        'target_frame': 'target',
         'cam': 'camD',
         'serial': '/dev/serial_servogroup78',
         'up_init': 155,
@@ -112,6 +112,7 @@ def generate_launch_description():
     # )
     # ld.add_action(base_to_servogroupxx)
 
+    # # 模拟目标轨迹
     # Target_Trajectory_Simulation = Node(
     #     package='ftservocontrol',
     #     executable='Target_Trajectory_Simulation',
@@ -119,6 +120,16 @@ def generate_launch_description():
     # )
     # ld.add_action(Target_Trajectory_Simulation)
 
+    # # 多相机协同跟踪
+    # Multi_Servogp_Control = Node(
+    #     package='ftservocontrol',
+    #     executable='Multi_Servogp_Control',
+    #     name='MultiServogpControl',
+    #     output='screen',
+    # )
+    # ld.add_action(Multi_Servogp_Control)
+
+    # # 启动rviz2
     # rviz = Node(
     #     package='rviz2',
     #     executable='rviz2',
