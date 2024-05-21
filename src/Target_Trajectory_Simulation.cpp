@@ -47,8 +47,8 @@ public:
     void publish_trajectory()
     {
         // 生成轨迹
-        circle_trajectory();
-        // eight_trajectory();
+        // circle_trajectory();
+        eight_trajectory();
 
         // 发布 base 到 target 的变换
         msg_base_to_target.header.stamp = this->now();
@@ -89,7 +89,7 @@ public:
         target_position.x() = radius * cos(count);
         target_position.y() = radius * sin(count) * cos(count);
         target_position.z() = 0.4;
-        count += d_count * 10;
+        count += d_count * 20;
         if(count > 2 * M_PI)
         {
             count = 0.0;

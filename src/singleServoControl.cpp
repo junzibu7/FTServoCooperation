@@ -75,35 +75,65 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 void SingleServoNode::servo_move(double target_down_status, double target_up_status)
 {
 	// Move the down servo to the target position
+	// 向左转动为负，向右转动为正
 	if ((target_down_status > down_status_max) )
 	{
+		#ifdef SERVO_ENABLE
 		_servo.move(down_status_max, id_down);
+		#else
+		down_status = down_status_max;
+		#endif
+
 		RCLCPP_ERROR(nh->get_logger(), "The target position of the down servo is out of range!");
 	}
 	else if((target_down_status < down_status_min))
 	{
+		#ifdef SERVO_ENABLE
 		_servo.move(down_status_min, id_down);
+		#else
+		down_status = down_status_min;
+		#endif
+
 		RCLCPP_ERROR(nh->get_logger(), "The target position of the down servo is out of range!");
 	}
 	else
 	{
+		#ifdef SERVO_ENABLE
 		_servo.move(target_down_status, id_down);
+		#else
+		down_status = target_down_status;
+		#endif
 	}
 
 	// Move the up servo to the target position
+	// 向下转动为正，向上转动为负
 	if ((target_up_status > up_status_max) )
 	{
+		#ifdef SERVO_ENABLE
 		_servo.move(up_status_max, id_up);
+		#else
+		up_status = up_status_max;
+		#endif
+
 		RCLCPP_ERROR(nh->get_logger(), "The target position of the up servo is out of range!");
 	}
 	else if((target_up_status < up_status_min))
 	{
+		#ifdef SERVO_ENABLE
 		_servo.move(up_status_min, id_up);
+		#else
+		up_status = up_status_min;
+		#endif
+
 		RCLCPP_ERROR(nh->get_logger(), "The target position of the up servo is out of range!");
 	}
 	else
 	{
+		#ifdef SERVO_ENABLE
 		_servo.move(target_up_status, id_up);
+		#else
+		up_status = target_up_status;
+		#endif
 	}
 }
 
@@ -224,19 +254,40 @@ Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_status){
 		force_flag = true;
 	}
 
-	// cout << cam + "_target_loss:" << target_loss << endl;
+	// if(cam == "camA")
+	// {
+	// 	cout << cam + "_target_status:" << target_status << endl; 
+	// 	cout << cam + "_target_loss:" << target_loss << endl;
+	// }
 
 	return target_loss;
 }
 
-Eigen::Vector2d SingleServoNode::target_loss2status(double loss_x, double loss_y, bool force_flag){
-	Eigen::Vector2d target_image_pos;
-	target_image_pos.x() = 320 + 320 * pow(loss_x / 10, 1/3);
-	target_image_pos.y() = 240 + 240 * pow(loss_y / 10, 1/3);
+cv::Point2d SingleServoNode::target_loss2status(double loss_x, double loss_y, bool force_flag){
+	cv::Point2d target_image_pos = cv::Point2d(0.0, 0.0);
+
+	// Target loss process
+	double x_para = 0.0;
+	double y_para = 0.0;
+
+	if(loss_x < 0){
+		x_para = - pow(-loss_x / 10.0, 1.0 / 3.0);
+	}else{
+		x_para = pow(loss_x / 10.0, 1.0 / 3.0);
+	}
+
+	if(loss_y < 0){
+		y_para = - pow(-loss_y / 10.0, 1.0 / 3.0);
+	}else{	
+		y_para = pow(loss_y / 10.0, 1.0 / 3.0);
+	}
+
+	target_image_pos.x = 320.0 + 320.0 * x_para;
+	target_image_pos.y = 240.0 + 240.0 * y_para;
 
 	if(force_flag){
-		target_image_pos.x() = 320;
-		target_image_pos.y() = 240;
+		target_image_pos.x = 320.0;
+		target_image_pos.y = 240.0;
 	}
 
 	return target_image_pos;
@@ -245,17 +296,27 @@ Eigen::Vector2d SingleServoNode::target_loss2status(double loss_x, double loss_y
 void SingleServoNode::servo_command_callback(const msgs::msg::Servocommand::SharedPtr msg)
 {
 	// Move the servo to the target position
-	Eigen::Vector2d target_image_pos = target_loss2status(msg->state_down, msg->state_up, msg->force_flag); 
+	cv::Point2d target_image_pos = target_loss2status(msg->state_down, msg->state_up, msg->force_flag); 
+	// target_image_pos = cv::Point2d(320, 240);
 	Eigen::Vector2d target_change = target_status2change(target_image_pos);
 	target_down_change = target_change.x();
 	target_up_change = target_change.y();
 
-	#ifdef SERVO_ENABLE
+	// // test
+	// if(cam == "camA")
+	// {
+		// cout << cam+ "_estimation_t_x:" << estimation_t_x << endl;	
+		// cout << cam+ "_estimation_t_y:" << estimation_t_y << endl;
+		// cout << cam+ "_estimation_t_z:" << estimation_t_z << endl;
+		// cout << cam + "_target_status:" << target_status << endl;
+		// cout << cam + "_calculate_loss:" << msg->state_down << " " << msg->state_up << endl;
+		// cout << cam + "_target_image_pos:" << target_image_pos << endl;
+		// cout << cam + "target_down_change:" << target_down_change << endl;
+		// cout << cam + "target_up_change:" << target_up_change << endl;
+	// }
+
 	servo_move(down_status + target_down_change, up_status + target_up_change);
-	#else
-	// down_status += target_down_change;
-	// up_status += target_up_change;
-	#endif
+	
 }
 
 void SingleServoNode::loadCameraConfig(const std::string& config_path)
@@ -314,26 +375,42 @@ void SingleServoNode::target_estimation2status()
     target_status.x = image_point[0].x;
 	target_status.y = image_point[0].y;
 
-	// cout << cam + "_target_status:" << target_status << endl; 
+	DepthofField_x = real_point.x / (target_status.x - cx);
+	DepthofField_y = real_point.y / (target_status.y - cy);
+
+	// if(cam == "camA")
+	// {
+	// 	cout << cam + "_target_status:" << target_status << endl; 
+	// }
 }
 
-Eigen::Vector2d SingleServoNode::target_status2change(Eigen::Vector2d target_image_pos)
+Eigen::Vector2d SingleServoNode::target_status2change(cv::Point2d target_image_pos)
 {
-	// 计算相机坐标系下的点 (X, Y, Z)
+	// 由图像坐标系下的二维点（x, y）计算相机坐标系下的点 (X, Y, Z)
     Eigen::Vector3d target_camera_point;
-	target_camera_point[0] = estimation_distance;
-    target_camera_point[1] = - (target_image_pos[0] - cx) * estimation_t_x / (target_status.x - cx);
-    target_camera_point[2] = (target_image_pos[1] - cy) * estimation_t_y / (target_status.y - cy);
+	target_camera_point[0] = (target_image_pos.x - cx) * DepthofField_x;
+	target_camera_point[1] = (target_image_pos.y - cy) * DepthofField_y;
+	target_camera_point[2] = estimation_t_x;
+
+	// if(cam == "camA")
+	// {
+	// 	cout << cam + "_target_camera_point:" << target_camera_point << endl;
+	// }
 
 	//水平夹角theta，垂直夹角phi
 	double theta = 0;
 	double phi = 0;
-	theta = atan(- target_camera_point[1] / target_camera_point[0]) - atan(- estimation_t_y / estimation_t_x);
-	phi = - (atan(target_camera_point[2] / sqrt(pow(target_camera_point[0],2) + pow(target_camera_point[1],2))) - atan(estimation_t_z / sqrt(pow(estimation_t_x,2) + pow(estimation_t_y,2))));
+	theta = - atan( target_camera_point[0] / target_camera_point[2]) + atan(- estimation_t_y / estimation_t_x);
+	phi = - (atan(- target_camera_point[1] / sqrt(pow(target_camera_point[0],2) + pow(target_camera_point[2],2))) - atan(estimation_t_z / sqrt(pow(estimation_t_x,2) + pow(estimation_t_y,2))));
+	theta = theta * 180.0 / M_PI;
+	phi = - phi * 180.0 / M_PI;
 
-	cout << "theta:" << theta << endl;
-	cout << "phi:" << phi << endl;
-
+	// if(cam == "camA")
+	// {
+	// 	RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
+	// }
+	
+	// 由theta和phi计算舵机转动角度
 	Eigen::Vector2d servo_move_target(theta, phi);
 	return servo_move_target;
 
@@ -353,9 +430,5 @@ void SingleServoNode::find_transform(const std::string& from_frame, const std::s
     } catch (const tf2::TransformException& ex) {
       	// RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
     }
-
-	// cout << cam+ "_estimation_t_x:" << estimation_t_x << endl;	
-	// cout << cam+ "_estimation_t_y:" << estimation_t_y << endl;
-	// cout << cam+ "_estimation_t_z:" << estimation_t_z << endl;
 
   }

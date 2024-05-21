@@ -87,9 +87,9 @@ public:
 	bool force_flag = false;
 
 	//Target Parameters
-	double estimation_t_x = 0;
-	double estimation_t_y = 0;
-	double estimation_t_z = 0;
+	double estimation_t_x = 1;
+	double estimation_t_y = 1;
+	double estimation_t_z = 1;
 	double estimation_distance = 0;
 	double target_t_x = 0;
 	double target_t_y = 0;
@@ -104,6 +104,8 @@ public:
 	double fx, fy, cx, cy;
 	cv::Mat camera_matrix;
 	cv::Mat distortion_coefficients;
+	double DepthofField_x = 1.0;
+	double DepthofField_y = 1.0;
 
 	//Servo Transforms
 	Eigen::Matrix4Xd T_DU = Eigen::Matrix4d::Identity();
@@ -178,14 +180,14 @@ public:
 	* @return: the target loss
 	*/
 	Eigen::Vector2d target_status2loss(cv::Point2f target_status);
-	Eigen::Vector2d target_loss2status(double loss_x, double loss_y, bool force_flag);
+	cv::Point2d target_loss2status(double loss_x, double loss_y, bool force_flag);
 
 	void target_estimation2status();
 
 	/*
 	* 
 	*/
-	Eigen::Vector2d target_status2change(Eigen::Vector2d target_image_pos);
+	Eigen::Vector2d target_status2change(cv::Point2d target_image_pos);
 
 	/*
 	* @brief: This function is the callback function for the servo command subscriber

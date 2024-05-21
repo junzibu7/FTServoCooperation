@@ -86,6 +86,8 @@ void MultiServoNode::calculate_control_signal()
 	pub_servo56_command->publish(servo56_command);
 	pub_servo78_command->publish(servo78_command);
 
+	// cout << "servo12_command: " << servo12_command.state_down << " " << servo12_command.state_up << endl;
+
 	// RCLCPP_INFO(this->get_logger(), "Calculated Control Signal sent out!");
 
 }
