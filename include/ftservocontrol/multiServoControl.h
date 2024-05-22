@@ -18,6 +18,7 @@ public:
 	Eigen::Matrix<double,8,8> iter_A = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> iter_B = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> iter_B_buf = Eigen::Matrix<double,8,8>::Identity();
+	double COST = 100000;
 
 	//Servo Parameters
 	double s_vel = 1000;
@@ -38,7 +39,6 @@ public:
 	
 
 	//Servo Transforms
-
 
 	//Publishers and Subscribers
 	rclcpp::TimerBase::SharedPtr timer_;
@@ -78,7 +78,14 @@ public:
 	 * @brief Solve the minimum cost problem
 	 */
 	void min_cost_solve();
-	
+
+	/*
+	 * @brief Update the parameters
+	 */
+	void Q_param_update();
+	void R_param_update();
+	void K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag);
+
 };
 
 #endif // MULTISERVOCONTROL_H

@@ -51,21 +51,30 @@ void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr 
 
 void MultiServoNode::calculate_control_signal()
 {
-	// RCLCPP_INFO(this->get_logger(), "Calculating Control Signal!");
-
-	// Calculate k = control / loss
-	K = (R + iter_B.transpose()*Q*iter_B).inverse()*iter_B.transpose()*Q*iter_A;
+	Q_param_update();
+	R_param_update();
+	
+	// Calculate k = control / loss (+)
+	K_param_update(iter_A, iter_B, false);
 
 	servo_cur = K * loss_cur;
 
+	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
+	
 	iter_B_buf = iter_B;
 
 	min_cost_solve();
 
-	K = (R + iter_B_buf.transpose()*Q*iter_B_buf).inverse()*iter_B_buf.transpose()*Q*iter_A;
+	K_param_update(iter_A, iter_B_buf, true);
+
 	servo_cur = K * loss_cur;
 
-	loss_nex = iter_A * loss_cur + iter_B_buf * servo_cur;
+	loss_nex = iter_A * loss_cur - iter_B_buf * servo_cur;
+	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
+	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
+
+	COST = 0.5*(servo_cur.transpose()*R*servo_cur).value() + 0.5*(loss_nex.transpose()*Q*loss_nex).value();
+	RCLCPP_INFO(this->get_logger(), "COST: %f", COST);
 
 	servo12_command.state_down = loss_nex(0);
 	servo12_command.state_up = loss_nex(1);
@@ -85,11 +94,6 @@ void MultiServoNode::calculate_control_signal()
 	pub_servo34_command->publish(servo34_command);
 	pub_servo56_command->publish(servo56_command);
 	pub_servo78_command->publish(servo78_command);
-
-	// cout << "servo12_command: " << servo12_command.state_down << " " << servo12_command.state_up << endl;
-
-	// RCLCPP_INFO(this->get_logger(), "Calculated Control Signal sent out!");
-
 }
 
 void MultiServoNode::min_cost_solve()
@@ -115,15 +119,62 @@ void MultiServoNode::min_cost_solve()
 
 	for(int i = 0; i < 8; i++)
 	{
-		if(servo_cur(i) > 50)
+		if(servo_cur(i) > 5)
 		{
 			iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Identity();
 		}
-		else if(servo_cur(i) < 5)
-		{
-			iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Zero();
-		}
+		// else if(servo_cur(i) < 5)
+		// {
+		// 	iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Zero();
+		// }
 	}
-
 }
 
+void MultiServoNode::Q_param_update()
+{
+	Q(0, 0) = 2;
+	Q(1, 1) = 2;
+	Q(2, 2) = 2;
+	Q(3, 3) = 2;
+	Q(4, 4) = 2;
+	Q(5, 5) = 2;
+	Q(6, 6) = 2;
+	Q(7, 7) = 2;
+}
+
+void MultiServoNode::R_param_update()
+{
+	R(0, 0) = 1;
+	R(1, 1) = 1;
+	R(2, 2) = 1;
+	R(3, 3) = 1;
+	R(4, 4) = 1;
+	R(5, 5) = 1;
+	R(6, 6) = 1;
+	R(7, 7) = 1;
+}
+
+void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag)
+{
+	Eigen::Matrix<double,8,8> buffer;
+	
+	buffer = R + B.transpose()*Q*B;
+	
+	for(int i = 0; i < 8; i++)
+	{
+		if(buffer(i, i) < 0.0001)
+		{
+			buffer(i, i) = 0.0001;
+		}
+	}
+	K = buffer.inverse()*B.transpose()*Q*A;
+
+	if(print_flag)
+	{
+		// cout << "A: " << endl << A << endl;
+		// cout << "B: " << endl << B << endl;
+		// cout << "buffer: " << endl << buffer << endl;
+		// cout << "K: " << endl << K << endl;
+	}
+	
+}

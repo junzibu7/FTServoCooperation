@@ -57,16 +57,13 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 
 	// Servo Initialization
 	_servo.init(serial_, 2, nh, {id_down, id_up});
-
+	#endif
 
 	// Move the servo to the initial position
 	servo_move(down_init, up_init);
-	#endif
+	
 
 	// std::this_thread::sleep_for(1s);
-
-	down_status = down_init;
-	up_status = up_init;
 
 	// cout << "down_status:" << down_status << endl;
 	// cout << "up_status:" << up_status << endl;
