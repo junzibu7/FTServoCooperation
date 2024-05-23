@@ -83,13 +83,13 @@ public:
     // 生成8字形轨迹
     void eight_trajectory()
     {
-        double radius = 0.6;
+        double radius = 0.5;
         static double count = 0.0;
         double d_count = M_PI / 3600;
-        target_position.x() = radius * cos(count);
+        target_position.x() = radius * cos(count) + 1;
         target_position.y() = radius * sin(count) * cos(count);
-        target_position.z() = 0.4;
-        count += d_count * 20;
+        target_position.z() = 0.5 + 0.2 * sin(count);
+        count += d_count * 10;
         if(count > 2 * M_PI)
         {
             count = 0.0;

@@ -93,6 +93,7 @@ else()
   find_package(Eigen3 REQUIRED)
   find_package(rosidl_default_generators REQUIRED)
   find_package(msgs REQUIRED)
+  find_package(ament_index_cpp REQUIRED)
 
   include_directories(
     include
@@ -219,6 +220,8 @@ else()
     launch
     config
     rviz
+    data
+    toolbox
     DESTINATION share/${PROJECT_NAME}
   )
 

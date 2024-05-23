@@ -73,8 +73,15 @@ void MultiServoNode::calculate_control_signal()
 	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
 	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
 
+	// Analysis of the cost
 	COST = 0.5*(servo_cur.transpose()*R*servo_cur).value() + 0.5*(loss_nex.transpose()*Q*loss_nex).value();
-	RCLCPP_INFO(this->get_logger(), "COST: %f", COST);
+	cost_values.open(cost_values_path, std::ios::out | std::ios::app);
+	if (!cost_values.is_open()) {
+		RCLCPP_ERROR(this->get_logger(), "Failed to open cost_values.txt");
+	}else{
+		cost_values << COST << endl;
+		cost_values.close();
+	}
 
 	servo12_command.state_down = loss_nex(0);
 	servo12_command.state_up = loss_nex(1);
@@ -132,25 +139,25 @@ void MultiServoNode::min_cost_solve()
 
 void MultiServoNode::Q_param_update()
 {
-	Q(0, 0) = 2;
+	Q(0, 0) = 2.5;
 	Q(1, 1) = 2;
-	Q(2, 2) = 2;
+	Q(2, 2) = 2.5;
 	Q(3, 3) = 2;
-	Q(4, 4) = 2;
+	Q(4, 4) = 2.5;
 	Q(5, 5) = 2;
-	Q(6, 6) = 2;
+	Q(6, 6) = 2.5;
 	Q(7, 7) = 2;
 }
 
 void MultiServoNode::R_param_update()
 {
-	R(0, 0) = 1;
+	R(0, 0) = 1.5;
 	R(1, 1) = 1;
-	R(2, 2) = 1;
+	R(2, 2) = 1.5;
 	R(3, 3) = 1;
-	R(4, 4) = 1;
+	R(4, 4) = 1.5;
 	R(5, 5) = 1;
-	R(6, 6) = 1;
+	R(6, 6) = 1.5;
 	R(7, 7) = 1;
 }
 

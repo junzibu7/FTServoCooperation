@@ -2,6 +2,8 @@
 #define MULTISERVOCONTROL_H
 
 #include <ftservocontrol/singleServoControl.h>
+#include <fstream>
+#include "ament_index_cpp/get_package_share_directory.hpp"
 
 using namespace std::chrono_literals;
 using namespace std;
@@ -9,7 +11,7 @@ using namespace std;
 class MultiServoNode: public rclcpp::Node
 {
 public:
-	//Basic Parameters
+	// Basic Parameters
 	Eigen::Matrix<double,8,8> K = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> S = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> Q = Eigen::Matrix<double,8,8>::Identity();
@@ -20,7 +22,7 @@ public:
 	Eigen::Matrix<double,8,8> iter_B_buf = Eigen::Matrix<double,8,8>::Identity();
 	double COST = 100000;
 
-	//Servo Parameters
+	// Servo Parameters
 	double s_vel = 1000;
 	Eigen::Matrix<double,8,1> servo_cur = Eigen::Matrix<double,8,1>::Zero();
 	Eigen::Matrix<double,8,1> servo_vel = Eigen::Matrix<double,8,1>::Zero();
@@ -29,7 +31,7 @@ public:
 	msgs::msg::Servocommand servo56_command;
 	msgs::msg::Servocommand servo78_command;
 
-	//Target Parameters
+	// Target Parameters
 	bool camA_force_flag = false;
 	bool camB_force_flag = false;
 	bool camC_force_flag = false;
@@ -38,9 +40,9 @@ public:
 	Eigen::Matrix<double,8,1> loss_nex = Eigen::Matrix<double,8,1>::Zero();
 	
 
-	//Servo Transforms
+	// Servo Transforms
 
-	//Publishers and Subscribers
+	// Publishers and Subscribers
 	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camA;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camB;
@@ -51,11 +53,17 @@ public:
 	rclcpp::Publisher<msgs::msg::Servocommand>::SharedPtr pub_servo56_command;
 	rclcpp::Publisher<msgs::msg::Servocommand>::SharedPtr pub_servo78_command;
 
-	//tf
+	// tf
 	std::shared_ptr<tf2_ros::TransformBroadcaster> servogroup_to_cam;
 	tf2::Stamped<tf2::Transform> cam_to_estimation;
 	tf2::Stamped<tf2::Transform> cam_to_coopestimation;
 	geometry_msgs::msg::TransformStamped msg_servogroup_to_cam;
+
+	// Data analysis
+	std::string package_path = ament_index_cpp::get_package_share_directory("ftservocontrol");
+	fstream cost_values;
+	string cost_values_path = package_path + "/data/cost_values.txt";
+
 
 //================================== function declarations ==================================//
 	MultiServoNode(const std::string &node_name);
