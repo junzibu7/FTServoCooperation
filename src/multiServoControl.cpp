@@ -7,8 +7,8 @@ using namespace std;
 MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 {
 	// Basic Parameters	
-	timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&MultiServoNode::calculate_control_signal, this));
-
+	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&MultiServoNode::calculate_control_signal, this));
+	evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
 	// System Initialization
 	sub_target_loss_camA = this->create_subscription<msgs::msg::Loss>("/target_loss_camA", 10, std::bind(&MultiServoNode::target_loss_camA_callback, this, std::placeholders::_1));
 	sub_target_loss_camB = this->create_subscription<msgs::msg::Loss>("/target_loss_camB", 10, std::bind(&MultiServoNode::target_loss_camB_callback, this, std::placeholders::_1));
@@ -19,6 +19,9 @@ MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 	pub_servo34_command = this->create_publisher<msgs::msg::Servocommand>("/servo34_command", 1);
 	pub_servo56_command = this->create_publisher<msgs::msg::Servocommand>("/servo56_command", 1);
 	pub_servo78_command = this->create_publisher<msgs::msg::Servocommand>("/servo78_command", 1);
+
+	// Clear the cost_values file
+	cost_values.open(cost_values_path, std::ios::out | std::ios::trunc);
 }
 
 void MultiServoNode::target_loss_camA_callback(const msgs::msg::Loss::SharedPtr msg)
@@ -70,18 +73,8 @@ void MultiServoNode::calculate_control_signal()
 	servo_cur = K * loss_cur;
 
 	loss_nex = iter_A * loss_cur - iter_B_buf * servo_cur;
-	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
+	RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
 	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
-
-	// Analysis of the cost
-	COST = 0.5*(servo_cur.transpose()*R*servo_cur).value() + 0.5*(loss_nex.transpose()*Q*loss_nex).value();
-	cost_values.open(cost_values_path, std::ios::out | std::ios::app);
-	if (!cost_values.is_open()) {
-		RCLCPP_ERROR(this->get_logger(), "Failed to open cost_values.txt");
-	}else{
-		cost_values << COST << endl;
-		cost_values.close();
-	}
 
 	servo12_command.state_down = loss_nex(0);
 	servo12_command.state_up = loss_nex(1);
@@ -101,6 +94,19 @@ void MultiServoNode::calculate_control_signal()
 	pub_servo34_command->publish(servo34_command);
 	pub_servo56_command->publish(servo56_command);
 	pub_servo78_command->publish(servo78_command);
+}
+
+void MultiServoNode::cost_values_evaluate()
+{
+	// Analysis of the cost
+	COST = 0.5*(servo_cur.transpose()*R*servo_cur).value() + 0.5*(loss_nex.transpose()*Q*loss_nex).value();
+	cost_values.open(cost_values_path, std::ios::out | std::ios::app);
+	if (!cost_values.is_open()) {
+		RCLCPP_ERROR(this->get_logger(), "Failed to open cost_values.txt");
+	}else{
+		cost_values << COST << endl;
+		cost_values.close();
+	}
 }
 
 void MultiServoNode::min_cost_solve()
@@ -139,14 +145,14 @@ void MultiServoNode::min_cost_solve()
 
 void MultiServoNode::Q_param_update()
 {
-	Q(0, 0) = 2.5;
-	Q(1, 1) = 2;
-	Q(2, 2) = 2.5;
-	Q(3, 3) = 2;
-	Q(4, 4) = 2.5;
-	Q(5, 5) = 2;
-	Q(6, 6) = 2.5;
-	Q(7, 7) = 2;
+	Q(0, 0) = 10;
+	Q(1, 1) = 6;
+	Q(2, 2) = 10;
+	Q(3, 3) = 6;
+	Q(4, 4) = 10;
+	Q(5, 5) = 6;
+	Q(6, 6) = 10;
+	Q(7, 7) = 6;
 }
 
 void MultiServoNode::R_param_update()

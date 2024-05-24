@@ -13,16 +13,23 @@ def main():
         for line in lines:
             cost_values.append(float(line.strip()))
 
+    mean_value = sum(cost_values) / len(cost_values)
+
+    for i in range(len(cost_values)):
+        cost_values[i] = cost_values[i] / mean_value
+        if cost_values[i] > 3:
+            cost_values[i] = 3
+
     # 创建图形
     plt.figure()
 
     # 绘制线图
-    plt.plot(cost_values, label='Line 1')
+    plt.plot(cost_values, label='Line 1', color='red', linestyle='-', linewidth=1)
 
     # 添加标题和标签
-    plt.title('Simple Plot')
-    plt.xlabel('X Axis')
-    plt.ylabel('Y Axis')
+    plt.title('Cost Values Analysis')
+    plt.xlabel('Time')
+    plt.ylabel('Cost Values / Mean Value')
 
     # 显示图例
     plt.legend()

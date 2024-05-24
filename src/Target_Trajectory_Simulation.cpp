@@ -47,8 +47,9 @@ public:
     void publish_trajectory()
     {
         // 生成轨迹
-        // circle_trajectory();
-        eight_trajectory();
+        // circle_trajectory(0, 0, 0);
+        // eight_trajectory(0, 0, 0);
+        preset_trajectory();
 
         // 发布 base 到 target 的变换
         msg_base_to_target.header.stamp = this->now();
@@ -65,14 +66,14 @@ public:
     }
 
     // 生成圆形轨迹
-    void circle_trajectory()
+    void circle_trajectory(double x_init, double y_init, double z_init)
     {
         double radius = 0.6;
         static double count = 0.0;
         double d_count = M_PI / 3600;
-        target_position.x() = radius * cos(count);
-        target_position.y() = radius * sin(count);
-        target_position.z() = 0.4;
+        target_position.x() = radius * cos(count) + x_init;
+        target_position.y() = radius * sin(count) + y_init;
+        target_position.z() = 0.4 + z_init;
         count += d_count * 10;
         if(count > 2*M_PI)
         {
@@ -81,18 +82,53 @@ public:
     }
 
     // 生成8字形轨迹
-    void eight_trajectory()
+    void eight_trajectory(double x_init, double y_init, double z_init)
     {
         double radius = 0.5;
         static double count = 0.0;
         double d_count = M_PI / 3600;
-        target_position.x() = radius * cos(count) + 1;
-        target_position.y() = radius * sin(count) * cos(count);
-        target_position.z() = 0.5 + 0.2 * sin(count);
+        target_position.x() = radius * cos(count) + 1 + x_init;
+        target_position.y() = radius * sin(count) * cos(count) + y_init;
+        target_position.z() = 0.5 + 0.2 * sin(count) + z_init;
         count += d_count * 10;
         if(count > 2 * M_PI)
         {
             count = 0.0;
+        }
+    }
+
+    // 生成工作预设轨迹
+    void preset_trajectory()
+    {
+        static double COUNT = 0.0;
+        // 直线抬高
+        if(COUNT < 10000.0 / 33.0)
+        {
+            target_position.x() = 0;
+            target_position.y() = 0;
+            target_position.z() += 0.5 / (10000.0 / 33.0);
+            COUNT++;
+        }
+        // 悬停
+        else if((COUNT < 15000.0 / 33.0) && (COUNT >= 10000.0 / 33.0))
+        {
+            target_position.x() += 0;
+            target_position.y() += 0;
+            target_position.z() += 0;
+            COUNT++;
+        }
+        // 直线到达目标位置
+        else if((COUNT < 50000.0 / 33.0) && (COUNT >= 15000.0 / 33.0))
+        {
+            target_position.x() += 5.0 / (30000.0 / 33.0);
+            target_position.y() += 0;
+            target_position.z() += 3.5 / (30000.0 / 33.0);
+            COUNT++;
+        }
+        // 生成圆形轨迹
+        else if(COUNT >= 50000 / 33)
+        {
+            circle_trajectory(5, 0, 4);
         }
     }
 

@@ -43,7 +43,8 @@ public:
 	// Servo Transforms
 
 	// Publishers and Subscribers
-	rclcpp::TimerBase::SharedPtr timer_;
+	rclcpp::TimerBase::SharedPtr signal_timer_;
+	rclcpp::TimerBase::SharedPtr evaluate_timer_;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camA;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camB;
 	rclcpp::Subscription<msgs::msg::Loss>::SharedPtr sub_target_loss_camC;
@@ -81,6 +82,11 @@ public:
 	 * @brief Calculate the control signal for the servos
 	 */
 	void calculate_control_signal();
+
+	/*
+	 * @brief Evaluate the cost values
+	 */
+	void cost_values_evaluate();
 
 	/*
 	 * @brief Solve the minimum cost problem
