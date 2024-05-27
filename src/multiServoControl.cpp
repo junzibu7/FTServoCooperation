@@ -63,7 +63,8 @@ void MultiServoNode::calculate_control_signal()
 	servo_cur = K * loss_cur;
 
 	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
-	
+	// RCLCPP_INFO(this->get_logger(), "servo_cur: %f %f %f %f %f %f %f %f", servo_cur(0), servo_cur(1), servo_cur(2), servo_cur(3), servo_cur(4), servo_cur(5), servo_cur(6), servo_cur(7));
+
 	iter_B_buf = iter_B;
 
 	min_cost_solve();
@@ -73,7 +74,7 @@ void MultiServoNode::calculate_control_signal()
 	servo_cur = K * loss_cur;
 
 	loss_nex = iter_A * loss_cur - iter_B_buf * servo_cur;
-	RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
+	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
 	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
 
 	servo12_command.state_down = loss_nex(0);
@@ -127,15 +128,17 @@ void MultiServoNode::min_cost_solve()
 		}
 	}
 
-	iter_B_buf.block<2, 2>(servo_select(0), servo_select(0)) = Eigen::Matrix2d::Zero();
-	iter_B_buf.block<2, 2>(servo_select(1), servo_select(1)) = Eigen::Matrix2d::Zero();
+	// cout << "servo_select: " << servo_select(0) << " " << servo_select(1) << endl;
+
+	iter_B_buf.block<2, 2>(2 * servo_select(0), 2 * servo_select(0)) = Eigen::Matrix2d::Zero();
+	iter_B_buf.block<2, 2>(2 * servo_select(1), 2 * servo_select(1)) = Eigen::Matrix2d::Zero();
 
 	for(int i = 0; i < 8; i++)
 	{
-		if(servo_cur(i) > 5)
-		{
-			iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Identity();
-		}
+		// if(servo_cur(i) > 5)
+		// {
+		// 	iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Identity();
+		// }
 		// else if(servo_cur(i) < 5)
 		// {
 		// 	iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Zero();
@@ -146,20 +149,20 @@ void MultiServoNode::min_cost_solve()
 void MultiServoNode::Q_param_update()
 {
 	Q(0, 0) = 10;
-	Q(1, 1) = 6;
+	Q(1, 1) = 10;
 	Q(2, 2) = 10;
-	Q(3, 3) = 6;
-	Q(4, 4) = 10;
+	Q(3, 3) = 10;
+	Q(4, 4) = 20;
 	Q(5, 5) = 6;
-	Q(6, 6) = 10;
+	Q(6, 6) = 15;
 	Q(7, 7) = 6;
 }
 
 void MultiServoNode::R_param_update()
 {
-	R(0, 0) = 1.5;
+	R(0, 0) = 2;
 	R(1, 1) = 1;
-	R(2, 2) = 1.5;
+	R(2, 2) = 2;
 	R(3, 3) = 1;
 	R(4, 4) = 1.5;
 	R(5, 5) = 1;

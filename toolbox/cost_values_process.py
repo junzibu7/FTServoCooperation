@@ -1,5 +1,6 @@
 import ament_index_python
 import matplotlib.pyplot as plt
+import numpy as np
 
 def main():
     # 获取当前包的共享目录路径
@@ -13,18 +14,29 @@ def main():
         for line in lines:
             cost_values.append(float(line.strip()))
 
-    mean_value = sum(cost_values) / len(cost_values)
+    mean_value = sum(cost_values[80*33:]) / len(cost_values[80*33:])
 
     for i in range(len(cost_values)):
         cost_values[i] = cost_values[i] / mean_value
-        if cost_values[i] > 3:
-            cost_values[i] = 3
+        if cost_values[i] > 4.5:
+            cost_values[i] = 4.5
+
+    time = [0] * len(cost_values)
+    for j in range(len(cost_values)):
+        time[j] = j / 33
 
     # 创建图形
     plt.figure()
 
     # 绘制线图
-    plt.plot(cost_values, label='Line 1', color='red', linestyle='-', linewidth=1)
+    plt.subplot(2, 1, 1)
+    plt.plot(time, cost_values, label='Line 1', color='red', linestyle='-', linewidth=1)
+    plt.axvline(x=10, color='blue', linestyle='--', linewidth=1)
+    plt.axvline(x=20, color='blue', linestyle='--', linewidth=1)
+    plt.axvline(x=25, color='blue', linestyle='--', linewidth=1)
+    plt.axvline(x=80, color='blue', linestyle='--', linewidth=1)
+    plt.subplot(2, 1, 2)
+    plt.plot(time[90*33:], cost_values[90*33:], label='Line 1', color='red', linestyle='-', linewidth=1)
 
     # 添加标题和标签
     plt.title('Cost Values Analysis')

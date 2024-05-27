@@ -101,8 +101,16 @@ public:
     void preset_trajectory()
     {
         static double COUNT = 0.0;
-        // 直线抬高
+        // 静止准备
         if(COUNT < 10000.0 / 33.0)
+        {
+            target_position.x() = 0;
+            target_position.y() = 0;
+            target_position.z() = 0;
+            COUNT++;
+        }
+        // 直线抬高
+        if(COUNT < 20000.0 / 33.0)
         {
             target_position.x() = 0;
             target_position.y() = 0;
@@ -110,7 +118,7 @@ public:
             COUNT++;
         }
         // 悬停
-        else if((COUNT < 15000.0 / 33.0) && (COUNT >= 10000.0 / 33.0))
+        else if((COUNT < 25000.0 / 33.0) && (COUNT >= 20000.0 / 33.0))
         {
             target_position.x() += 0;
             target_position.y() += 0;
@@ -118,15 +126,15 @@ public:
             COUNT++;
         }
         // 直线到达目标位置
-        else if((COUNT < 50000.0 / 33.0) && (COUNT >= 15000.0 / 33.0))
+        else if((COUNT < 80000.0 / 33.0) && (COUNT >= 25000.0 / 33.0))
         {
-            target_position.x() += 5.0 / (30000.0 / 33.0);
+            target_position.x() += 5.0 / (55000.0 / 33.0);
             target_position.y() += 0;
-            target_position.z() += 3.5 / (30000.0 / 33.0);
+            target_position.z() += 3.5 / (55000.0 / 33.0);
             COUNT++;
         }
         // 生成圆形轨迹
-        else if(COUNT >= 50000 / 33)
+        else if(COUNT >= 80000 / 33)
         {
             circle_trajectory(5, 0, 4);
         }
