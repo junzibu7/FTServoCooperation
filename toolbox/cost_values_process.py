@@ -18,8 +18,8 @@ def main():
 
     for i in range(len(cost_values)):
         cost_values[i] = cost_values[i] / mean_value
-        if cost_values[i] > 4.5:
-            cost_values[i] = 4.5
+        # if cost_values[i] > 4.5:
+        #     cost_values[i] = 4.5
 
     time = [0] * len(cost_values)
     for j in range(len(cost_values)):
