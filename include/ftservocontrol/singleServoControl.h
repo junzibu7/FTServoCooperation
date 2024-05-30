@@ -54,7 +54,7 @@
 using namespace std::chrono_literals;
 using namespace std;
 
-// #define SERVO_ENABLE true
+#define SERVO_ENABLE true
 
 class SingleServoNode: public rclcpp::Node
 {
@@ -70,10 +70,10 @@ public:
 	int id_up, id_down;
 	const double up_status_init = 180.0;
 	const double down_status_init = 180.0;
-	const double up_status_max = 250.0;
-	const double up_status_min = 100.0;
-	const double down_status_max = 350.0;
-	const double down_status_min = 10.0;
+	const double up_status_max = 200.0;//250
+	const double up_status_min = 145.0;//100
+	const double down_status_max = 200;//350
+	const double down_status_min = 160;//10
 	double up_status = up_status_init;
 	double down_status = down_status_init;
 	double target_up_status = up_status_init;
@@ -87,9 +87,9 @@ public:
 	bool force_flag = false;
 
 	//Target Parameters
-	double estimation_t_x = 1;
-	double estimation_t_y = 1;
-	double estimation_t_z = 1;
+	double estimation_t_x = 1.0;
+	double estimation_t_y = 0.0;
+	double estimation_t_z = 0.0;
 	double estimation_distance = 0;
 	double target_t_x = 0;
 	double target_t_y = 0;
@@ -104,8 +104,8 @@ public:
 	double fx, fy, cx, cy;
 	cv::Mat camera_matrix;
 	cv::Mat distortion_coefficients;
-	double DepthofField_x = 1.0;
-	double DepthofField_y = 1.0;
+	double DepthofField_x = 0.001;
+	double DepthofField_y = 0.001;
 
 	//Servo Transforms
 	Eigen::Matrix4Xd T_DU = Eigen::Matrix4d::Identity();

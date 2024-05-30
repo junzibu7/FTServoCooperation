@@ -141,8 +141,8 @@ void SingleServoNode::T_servogroup_to_camera(){
 	up_status = _servo.read(id_up);	
 	#endif	
 
-	// cout << "down_status:" << down_status << endl;
-	// cout << "up_status:" << up_status << endl;
+	cout << "down_status:" << down_status << endl;
+	cout << "up_status:" << up_status << endl;
 
 	down_change = (down_status - down_status_init) * M_PI / 180;
 	up_change = (up_status - up_status_init) * M_PI / 180;
@@ -351,6 +351,7 @@ void SingleServoNode::target_estimation2status()
 	real_point.x = - estimation_t_y;
 	real_point.y = - estimation_t_z;
 	real_point.z = + estimation_t_x;
+	if(real_point.z < 0.1) real_point.z = 0.1;
     target_point.push_back(real_point);
 
 	// cout << "target_point:" << target_point << endl;
@@ -372,8 +373,10 @@ void SingleServoNode::target_estimation2status()
     target_status.x = image_point[0].x;
 	target_status.y = image_point[0].y;
 
-	DepthofField_x = real_point.x / (target_status.x - cx);
-	DepthofField_y = real_point.y / (target_status.y - cy);
+	DepthofField_x = real_point.x / (target_status.x - cx + 1.0);
+	DepthofField_y = real_point.y / (target_status.y - cy + 1.0);
+
+	
 
 	// if(cam == "camA")
 	// {
@@ -384,14 +387,18 @@ void SingleServoNode::target_estimation2status()
 Eigen::Vector2d SingleServoNode::target_status2change(cv::Point2d target_image_pos)
 {
 	// 由图像坐标系下的二维点（x, y）计算相机坐标系下的点 (X, Y, Z)
-    Eigen::Vector3d target_camera_point;
-	target_camera_point[0] = (target_image_pos.x - cx) * DepthofField_x;
-	target_camera_point[1] = (target_image_pos.y - cy) * DepthofField_y;
+    Eigen::Vector3d target_camera_point(0.0, 0.0, 1.0);
+	double delta_pos_x = target_image_pos.x - cx;
+	double delta_pos_y = target_image_pos.y - cy;
+	if(delta_pos_x < 10) delta_pos_x = 0.0;
+	if(delta_pos_y < 5) delta_pos_y = 0.0;
+	target_camera_point[0] = delta_pos_x * DepthofField_x;
+	target_camera_point[1] = delta_pos_y * DepthofField_y;
 	target_camera_point[2] = estimation_t_x;
-
+	if(target_camera_point[2] < 0.1) target_camera_point[2] = 0.1;
 	// if(cam == "camA")
 	// {
-	// 	cout << cam + "_target_camera_point:" << target_camera_point << endl;
+		// cout << cam + "_target_camera_point:" << target_camera_point << endl;
 	// }
 
 	//水平夹角theta，垂直夹角phi
@@ -404,7 +411,7 @@ Eigen::Vector2d SingleServoNode::target_status2change(cv::Point2d target_image_p
 
 	// if(cam == "camA")
 	// {
-	// 	RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
+		// RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
 	// }
 	
 	// 由theta和phi计算舵机转动角度

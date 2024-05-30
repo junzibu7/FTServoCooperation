@@ -1,4 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
+#include <ftservocontrol/singleServoControl.h>
 
 #include <tf2/LinearMath/Transform.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -39,8 +40,10 @@ class TargetTrajectorySimulation : public rclcpp::Node
 public:
     TargetTrajectorySimulation() : Node("TargetTrajectorySimulation")
     {
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
+        // timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
         trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
+        sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
+        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/csj01/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 
@@ -49,7 +52,7 @@ public:
         // 生成轨迹
         // circle_trajectory(0, 0, 0);
         // eight_trajectory(0, 0, 0);
-        preset_trajectory();
+        // preset_trajectory();
 
         // 发布 base 到 target 的变换
         msg_base_to_target.header.stamp = this->now();
@@ -140,8 +143,47 @@ public:
         }
     }
 
+    void vicon_trajectory()
+    {
+        target_position.x() = vicon_target_x - vicon_base_x;
+        target_position.y() = vicon_target_y - vicon_base_y;
+        target_position.z() = vicon_target_z - vicon_base_z;
+        
+        // 发布 base 到 target 的变换
+        msg_base_to_target.header.stamp = this->now();
+        msg_base_to_target.header.frame_id = "base";
+        msg_base_to_target.child_frame_id = "target";
+        q.setRPY(0, 0, 0);
+        msg_base_to_target.transform.translation.x = target_position.x();
+        msg_base_to_target.transform.translation.y = target_position.y();
+        msg_base_to_target.transform.translation.z = target_position.z();
+        msg_base_to_target.transform.rotation = tf2::toMsg(q);
+
+        trajectory_publisher->publish(msg_base_to_target);
+        trajectory->sendTransform(msg_base_to_target);
+    }
+
+    void vicon_base_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+    {
+        vicon_base_x = msg->pose.position.x;
+        vicon_base_y = msg->pose.position.y;
+        vicon_base_z = msg->pose.position.z;
+    }
+
+
+    void vicon_target_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+    {
+        vicon_target_x = msg->pose.position.x;
+        vicon_target_y = msg->pose.position.y;
+        vicon_target_z = msg->pose.position.z;
+
+        vicon_trajectory();
+    }
+
     // Parameters
     rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr trajectory_publisher;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vicon_base;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vicon_target;
     std::shared_ptr<tf2_ros::TransformBroadcaster> trajectory;
     geometry_msgs::msg::TransformStamped msg_base_to_target;
     rclcpp::TimerBase::SharedPtr timer_;
@@ -149,6 +191,10 @@ public:
     // tf parameters
     tf2::Quaternion q;
     Eigen::Vector3d target_position = Eigen::Vector3d(0.0, 0.0, 0.0);
+
+    // vicon parameters
+    double vicon_base_x = 0, vicon_base_y = 0, vicon_base_z = 0;
+    double vicon_target_x = 0, vicon_target_y = 0, vicon_target_z = 0;
 };
 
 
