@@ -43,7 +43,7 @@ public:
         // timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
         trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
         sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
-        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/csj01/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
+        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/estimate/xt_real/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 

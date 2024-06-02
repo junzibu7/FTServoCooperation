@@ -20,7 +20,7 @@ def generate_launch_description():
         'target_frame': 'target',
         'cam': 'camA',
         'serial': '/dev/serial_servogroup12',
-        'up_init': 180,
+        'up_init': 155,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
@@ -112,32 +112,32 @@ def generate_launch_description():
     # )
     # ld.add_action(base_to_servogroupxx)
 
-    # 模拟目标轨迹
-    Target_Trajectory_Simulation = Node(
-        package='ftservocontrol',
-        executable='Target_Trajectory_Simulation',
-        name='trajectory_node',
-    )
-    ld.add_action(Target_Trajectory_Simulation)
+    # # 模拟目标轨迹
+    # Target_Trajectory_Simulation = Node(
+    #     package='ftservocontrol',
+    #     executable='Target_Trajectory_Simulation',
+    #     name='trajectory_node',
+    # )
+    # ld.add_action(Target_Trajectory_Simulation)
 
-    # 多相机协同跟踪
-    Multi_Servogp_Control = Node(
-        package='ftservocontrol',
-        executable='Multi_Servogp_Control',
-        name='MultiServogpControl',
-        output='screen',
-    )
-    ld.add_action(Multi_Servogp_Control)
+    # # 多相机协同跟踪
+    # Multi_Servogp_Control = Node(
+    #     package='ftservocontrol',
+    #     executable='Multi_Servogp_Control',
+    #     name='MultiServogpControl',
+    #     output='screen',
+    # )
+    # ld.add_action(Multi_Servogp_Control)
 
-    # 启动rviz2
-    rviz = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', os.path.join(get_package_share_directory('ftservocontrol'), 'rviz', 'servocontrol.rviz')],
-        output='screen'
-    )
-    ld.add_action(rviz)
+    # # 启动rviz2
+    # rviz = Node(
+    #     package='rviz2',
+    #     executable='rviz2',
+    #     name='rviz2',
+    #     arguments=['-d', os.path.join(get_package_share_directory('ftservocontrol'), 'rviz', 'servocontrol.rviz')],
+    #     output='screen'
+    # )
+    # ld.add_action(rviz)
 
     # 返回启动器描述
     return ld
