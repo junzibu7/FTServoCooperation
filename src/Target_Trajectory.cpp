@@ -35,15 +35,15 @@
 using namespace std::chrono_literals;
 using namespace std;
 
-class TargetTrajectorySimulation : public rclcpp::Node
+class TargetTrajectory : public rclcpp::Node
 {
 public:
-    TargetTrajectorySimulation() : Node("TargetTrajectorySimulation")
+    TargetTrajectory() : Node("TargetTrajectory")
     {
-        // timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
+        timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectory::publish_trajectory, this));
         trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
-        sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
-        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/estimate/xt_real/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
+        // sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectory::vicon_base_callback, this, std::placeholders::_1));
+        // sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/estimate/xt_real/pose", 10, std::bind(&TargetTrajectory::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 
@@ -52,7 +52,7 @@ public:
         // 生成轨迹
         // circle_trajectory(0, 0, 0);
         // eight_trajectory(0, 0, 0);
-        // preset_trajectory();
+        preset_trajectory();
 
         // 发布 base 到 target 的变换
         msg_base_to_target.header.stamp = this->now();
@@ -201,7 +201,7 @@ public:
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-    auto trajectory_node = std::make_shared<TargetTrajectorySimulation>();
+    auto trajectory_node = std::make_shared<TargetTrajectory>();
 
     rclcpp::spin(trajectory_node);
     rclcpp::shutdown();

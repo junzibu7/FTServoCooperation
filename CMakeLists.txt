@@ -189,9 +189,9 @@ else()
     singleServoControl
   )
 
-  add_executable(Target_Trajectory_Simulation src/Target_Trajectory_Simulation.cpp)
-  ament_target_dependencies(Target_Trajectory_Simulation rclcpp std_msgs tf2 cv_bridge)
-  target_link_libraries(Target_Trajectory_Simulation
+  add_executable(Target_Trajectory src/Target_Trajectory.cpp)
+  ament_target_dependencies(Target_Trajectory rclcpp std_msgs tf2 cv_bridge)
+  target_link_libraries(Target_Trajectory
     singleServoControl
   )
 
@@ -211,7 +211,7 @@ else()
     Single_Servogp_Control
     Multi_Servogp_Control
     base2servogroup
-    Target_Trajectory_Simulation
+    Target_Trajectory
     RUNTIME DESTINATION lib/${PROJECT_NAME}
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
   )

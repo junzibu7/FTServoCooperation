@@ -18,8 +18,8 @@ def main():
 
     for i in range(len(cost_values)):
         cost_values[i] = cost_values[i] / mean_value
-        # if cost_values[i] > 4.5:
-        #     cost_values[i] = 4.5
+        if cost_values[i] > 4.5:
+            cost_values[i] = 4.5
 
     time = [0] * len(cost_values)
     for j in range(len(cost_values)):
@@ -30,7 +30,7 @@ def main():
 
     # 绘制线图
     plt.subplot(2, 1, 1)
-    plt.plot(time, cost_values, label='Line 1', color='red', linestyle='-', linewidth=1)
+    plt.plot(time[:90*33], cost_values[:90*33], label='Line 1', color='red', linestyle='-', linewidth=1)
     plt.axvline(x=10, color='blue', linestyle='--', linewidth=1)
     plt.axvline(x=20, color='blue', linestyle='--', linewidth=1)
     plt.axvline(x=25, color='blue', linestyle='--', linewidth=1)

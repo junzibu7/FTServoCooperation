@@ -7,7 +7,7 @@ using namespace std;
 MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 {
 	// Basic Parameters	
-	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&MultiServoNode::calculate_control_signal, this));
+	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::calculate_control_signal, this));
 	evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
 	// System Initialization
 	sub_target_loss_camA = this->create_subscription<msgs::msg::Loss>("/target_loss_camA", 10, std::bind(&MultiServoNode::target_loss_camA_callback, this, std::placeholders::_1));
@@ -161,14 +161,14 @@ void MultiServoNode::Q_param_update()
 
 void MultiServoNode::R_param_update()
 {
-	R(0, 0) = 2;
-	R(1, 1) = 1;
-	R(2, 2) = 2;
-	R(3, 3) = 1;
-	R(4, 4) = 1.5;
-	R(5, 5) = 1;
-	R(6, 6) = 1.5;
-	R(7, 7) = 1;
+	R(0, 0) = 200;
+	R(1, 1) = 100;
+	R(2, 2) = 200;
+	R(3, 3) = 100;
+	R(4, 4) = 150;
+	R(5, 5) = 100;
+	R(6, 6) = 150;
+	R(7, 7) = 100;
 }
 
 void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag)
