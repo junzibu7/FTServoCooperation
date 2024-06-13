@@ -7,7 +7,7 @@ using namespace std;
 MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 {
 	// Basic Parameters	
-	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::calculate_control_signal, this));
+	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&MultiServoNode::calculate_control_signal, this));
 	evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
 	// System Initialization
 	sub_target_loss_camA = this->create_subscription<msgs::msg::Loss>("/target_loss_camA", 10, std::bind(&MultiServoNode::target_loss_camA_callback, this, std::placeholders::_1));
@@ -63,7 +63,7 @@ void MultiServoNode::calculate_control_signal()
 
 	servo_cur = K * loss_cur;
 
-	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
+	RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
 	// RCLCPP_INFO(this->get_logger(), "servo_cur: %f %f %f %f %f %f %f %f", servo_cur(0), servo_cur(1), servo_cur(2), servo_cur(3), servo_cur(4), servo_cur(5), servo_cur(6), servo_cur(7));
 
 	iter_B_buf = iter_B;
@@ -75,7 +75,7 @@ void MultiServoNode::calculate_control_signal()
 	servo_cur = K * loss_cur;
 
 	loss_nex = iter_A * loss_cur - iter_B_buf * servo_cur;
-	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
+	RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
 	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
 
 	servo12_command.state_down = loss_nex(0);
@@ -161,14 +161,14 @@ void MultiServoNode::Q_param_update()
 
 void MultiServoNode::R_param_update()
 {
-	R(0, 0) = 200;
-	R(1, 1) = 100;
-	R(2, 2) = 200;
-	R(3, 3) = 100;
-	R(4, 4) = 150;
-	R(5, 5) = 100;
-	R(6, 6) = 150;
-	R(7, 7) = 100;
+	R(0, 0) = 200/100.0;
+	R(1, 1) = 100/100.0;
+	R(2, 2) = 200/100.0;
+	R(3, 3) = 100/100.0;
+	R(4, 4) = 150/100.0;
+	R(5, 5) = 100/100.0;
+	R(6, 6) = 150/100.0;
+	R(7, 7) = 100/100.0;
 }
 
 void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag)

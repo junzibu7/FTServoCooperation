@@ -141,8 +141,8 @@ void SingleServoNode::T_servogroup_to_camera(){
 	up_status = _servo.read(id_up);	
 	#endif	
 
-	cout << "down_status:" << down_status << endl;
-	cout << "up_status:" << up_status << endl;
+	// cout << "down_status:" << down_status << endl;
+	// cout << "up_status:" << up_status << endl;
 
 	down_change = (down_status - down_status_init) * M_PI / 180;
 	up_change = (up_status - up_status_init) * M_PI / 180;
