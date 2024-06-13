@@ -104,13 +104,13 @@ def generate_launch_description():
     )
     ld.add_action(servo_group_78)
 
-    # 构建base到servogroupxx的tf树
-    base_to_servogroupxx = Node(
-        package='ftservocontrol',
-        executable='base2servogroup',
-        name='base2servogroup_node',
-    )
-    ld.add_action(base_to_servogroupxx)
+    # # 构建base到servogroupxx的tf树
+    # base_to_servogroupxx = Node(
+    #     package='ftservocontrol',
+    #     executable='base2servogroup',
+    #     name='base2servogroup_node',
+    # )
+    # ld.add_action(base_to_servogroupxx)
 
     # 模拟目标轨迹
     Target_Trajectory = Node(
