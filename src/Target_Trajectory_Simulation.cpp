@@ -43,7 +43,7 @@ public:
         // timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
         trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
         sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
-        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/estimate/xt_real/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
+        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/viconxt/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 
@@ -145,9 +145,9 @@ public:
 
     void vicon_trajectory()
     {
-        target_position.x() = vicon_target_x - vicon_base_x;
-        target_position.y() = vicon_target_y - vicon_base_y;
-        target_position.z() = vicon_target_z - vicon_base_z;
+        target_position.x() = vicon_target_x;
+        target_position.y() = vicon_target_y;
+        target_position.z() = vicon_target_z;
         
         // 发布 base 到 target 的变换
         msg_base_to_target.header.stamp = this->now();

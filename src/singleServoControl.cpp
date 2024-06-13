@@ -9,7 +9,7 @@ SingleServoNode::SingleServoNode(const std::string &node_name) : Node(node_name)
 	// Basic Parameters
 	this->declare_parameter<int>("id_down", 1);
 	this->declare_parameter<int>("id_up", 2);
-	this->declare_parameter<std::string>("target_frame", "EstimationfromcamA");
+	this->declare_parameter<std::string>("target_frame", "target");
 	this->declare_parameter<std::string>("source_frame", "camA");
 	this->declare_parameter<std::string>("cam", "camA"); 
 	this->declare_parameter<std::string>("serial", "/dev/ttyUSB0");
@@ -141,8 +141,8 @@ void SingleServoNode::T_servogroup_to_camera(){
 	up_status = _servo.read(id_up);	
 	#endif	
 
-	cout << "down_status:" << down_status << endl;
-	cout << "up_status:" << up_status << endl;
+	// cout << "down_status:" << down_status << endl;
+	// cout << "up_status:" << up_status << endl;
 
 	down_change = (down_status - down_status_init) * M_PI / 180;
 	up_change = (up_status - up_status_init) * M_PI / 180;
@@ -354,7 +354,7 @@ void SingleServoNode::target_estimation2status()
 	if(real_point.z < 0.1) real_point.z = 0.1;
     target_point.push_back(real_point);
 
-	// cout << "target_point:" << target_point << endl;
+	cout << "target_point:" << target_point << endl;
 
 	// 初始化相关参数矩阵
 	cv::Mat tVec(3, 1, cv::DataType<double>::type); // Translation vector
@@ -380,7 +380,7 @@ void SingleServoNode::target_estimation2status()
 
 	// if(cam == "camA")
 	// {
-	// 	cout << cam + "_target_status:" << target_status << endl; 
+		cout << cam + "_target_status:" << target_status << endl; 
 	// }
 }
 
@@ -431,8 +431,9 @@ void SingleServoNode::find_transform(const std::string& from_frame, const std::s
 		estimation_t_y = transform.transform.translation.y;
 		estimation_t_z = transform.transform.translation.z;
 		estimation_distance = sqrt(pow(estimation_t_x, 2) + pow(estimation_t_y, 2) + pow(estimation_t_z, 2));
+		cout << "estimation_t_x:" << estimation_t_x << "estimation_t_y:" << estimation_t_y << "estimation_t_z:" << estimation_t_z << endl;
     } catch (const tf2::TransformException& ex) {
-      	// RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
+      	RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
     }
 
   }

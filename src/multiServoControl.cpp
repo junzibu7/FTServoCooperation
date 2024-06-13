@@ -54,7 +54,7 @@ void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr 
 
 void MultiServoNode::calculate_control_signal()
 {
-	RCLCPP_INFO(this->get_logger(),"Calculate Start !");
+	// RCLCPP_INFO(this->get_logger(),"Calculate Start !");
 	Q_param_update();
 	R_param_update();
 	
@@ -75,7 +75,7 @@ void MultiServoNode::calculate_control_signal()
 	servo_cur = K * loss_cur;
 
 	loss_nex = iter_A * loss_cur - iter_B_buf * servo_cur;
-	RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
+	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
 	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
 
 	servo12_command.state_down = loss_nex(0);

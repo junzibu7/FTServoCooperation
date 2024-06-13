@@ -70,10 +70,10 @@ public:
 	int id_up, id_down;
 	const double up_status_init = 180.0;
 	const double down_status_init = 180.0;
-	const double up_status_max = 200.0;//250
-	const double up_status_min = 145.0;//100
-	const double down_status_max = 200;//350
-	const double down_status_min = 160;//10
+	const double up_status_max = 250.0;//250 //200
+	const double up_status_min = 100.0;//100 //145
+	const double down_status_max = 350;//350 //200
+	const double down_status_min = 10;//10 //160
 	double up_status = up_status_init;
 	double down_status = down_status_init;
 	double target_up_status = up_status_init;
