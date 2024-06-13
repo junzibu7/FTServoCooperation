@@ -86,5 +86,5 @@ roslaunch ftservocontrol initial.launch
 #include <ftservocontrol/FEETECHservo.h>
 ```
 - 直接使用类ftservo，各个函数的功能可以看注释，提供了类似读取，写入，初始化等等的函数。
-- 具体的example可见WritePos.cpp之中
+- 具体的example可见WritePos.cpp之中 /
 
