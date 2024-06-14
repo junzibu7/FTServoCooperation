@@ -7,7 +7,7 @@ using namespace std;
 MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 {
 	// Basic Parameters	
-	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&MultiServoNode::calculate_control_signal, this));
+	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&MultiServoNode::calculate_control_signal, this));
 	evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
 	// System Initialization
 	sub_target_loss_camA = this->create_subscription<msgs::msg::Loss>("/target_loss_camA", 10, std::bind(&MultiServoNode::target_loss_camA_callback, this, std::placeholders::_1));
@@ -149,26 +149,26 @@ void MultiServoNode::min_cost_solve()
 
 void MultiServoNode::Q_param_update()
 {
-	Q(0, 0) = 10;
+	Q(0, 0) = 15;
 	Q(1, 1) = 10;
-	Q(2, 2) = 10;
+	Q(2, 2) = 15;
 	Q(3, 3) = 10;
 	Q(4, 4) = 15;
-	Q(5, 5) = 6;
+	Q(5, 5) = 10;
 	Q(6, 6) = 15;
-	Q(7, 7) = 6;
+	Q(7, 7) = 10;
 }
 
 void MultiServoNode::R_param_update()
 {
-	R(0, 0) = 2;
-	R(1, 1) = 1;
-	R(2, 2) = 2;
-	R(3, 3) = 1;
-	R(4, 4) = 1.5;
-	R(5, 5) = 1;
-	R(6, 6) = 1.5;
-	R(7, 7) = 1;
+	R(0, 0) = 40;
+	R(1, 1) = 20;
+	R(2, 2) = 40;
+	R(3, 3) = 20;
+	R(4, 4) = 40;
+	R(5, 5) = 20;
+	R(6, 6) = 40;
+	R(7, 7) = 20;
 }
 
 void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag)

@@ -354,7 +354,7 @@ void SingleServoNode::target_estimation2status()
 	if(real_point.z < 0.1) real_point.z = 0.1;
     target_point.push_back(real_point);
 
-	cout << "target_point:" << target_point << endl;
+	// cout << "target_point:" << target_point << endl;
 
 	// 初始化相关参数矩阵
 	cv::Mat tVec(3, 1, cv::DataType<double>::type); // Translation vector
@@ -380,7 +380,7 @@ void SingleServoNode::target_estimation2status()
 
 	// if(cam == "camA")
 	// {
-		cout << cam + "_target_status:" << target_status << endl; 
+		// cout << cam + "_target_status:" << target_status << endl; 
 	// }
 }
 
@@ -431,7 +431,7 @@ void SingleServoNode::find_transform(const std::string& from_frame, const std::s
 		estimation_t_y = transform.transform.translation.y;
 		estimation_t_z = transform.transform.translation.z;
 		estimation_distance = sqrt(pow(estimation_t_x, 2) + pow(estimation_t_y, 2) + pow(estimation_t_z, 2));
-		cout << "estimation_t_x:" << estimation_t_x << "estimation_t_y:" << estimation_t_y << "estimation_t_z:" << estimation_t_z << endl;
+		// cout << "estimation_t_x:" << estimation_t_x << "estimation_t_y:" << estimation_t_y << "estimation_t_z:" << estimation_t_z << endl;
     } catch (const tf2::TransformException& ex) {
       	RCLCPP_ERROR(nh->get_logger(), "%s", ex.what());
     }

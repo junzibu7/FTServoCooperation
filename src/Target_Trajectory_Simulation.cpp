@@ -40,10 +40,10 @@ class TargetTrajectorySimulation : public rclcpp::Node
 public:
     TargetTrajectorySimulation() : Node("TargetTrajectorySimulation")
     {
-        // timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
+        timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectorySimulation::publish_trajectory, this));
         trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
-        sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
-        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/viconxt/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
+        // sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
+        // sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/viconxt/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 
@@ -51,7 +51,7 @@ public:
     {
         // 生成轨迹
         // circle_trajectory(0, 0, 0);
-        // eight_trajectory(0, 0, 0);
+        eight_trajectory(0, 0, 0.5);
         // preset_trajectory();
 
         // 发布 base 到 target 的变换
@@ -89,10 +89,10 @@ public:
     {
         double radius = 0.5;
         static double count = 0.0;
-        double d_count = M_PI / 3600;
-        target_position.x() = radius * cos(count) + 1 + x_init;
+        double d_count = M_PI / 3600 * 5;
+        target_position.x() = radius * cos(count) + x_init;
         target_position.y() = radius * sin(count) * cos(count) + y_init;
-        target_position.z() = 0.5 + 0.2 * sin(count) + z_init;
+        target_position.z() = 0.2 * sin(count) + z_init;
         count += d_count * 10;
         if(count > 2 * M_PI)
         {
