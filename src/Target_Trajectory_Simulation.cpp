@@ -89,7 +89,7 @@ public:
     {
         double radius = 0.5;
         static double count = 0.0;
-        double d_count = M_PI / 3600 * 5;
+        double d_count = M_PI / 3600 * 2;
         target_position.x() = radius * cos(count) + x_init;
         target_position.y() = radius * sin(count) * cos(count) + y_init;
         target_position.z() = 0.2 * sin(count) + z_init;

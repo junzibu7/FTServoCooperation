@@ -135,17 +135,6 @@ void MultiServoNode::cost_values_evaluate(int i)
 
 void MultiServoNode::min_cost_solve(int servo_choose_num)
 {
-	Eigen::Vector4i servo_select = Eigen::Vector4i::Zero();
-	servo_select(0) = -1;
-	servo_select(1) = -1;
-	servo_select(2) = -1;
-	servo_select(3) = -1;
-	Eigen::Vector4d min_cost_values = Eigen::Vector4d::Zero();
-	min_cost_values(0) = -10000.0;
-	min_cost_values(1) = -10000.0;
-	min_cost_values(2) = -10000.0;
-	min_cost_values(3) = -10000.0;
-
 	// Caculate the minimum cost
 	for(int i = 0; i < 4; i++)
 	{
@@ -153,6 +142,15 @@ void MultiServoNode::min_cost_solve(int servo_choose_num)
 	}
 	RCLCPP_INFO(this->get_logger(), "DELTA_COST: %f %f %f %f", DELTA_COST(0), DELTA_COST(1), DELTA_COST(2), DELTA_COST(3));
 	
+	// Initialize the servo_select and min_cost_values
+	servo_select(0) = -1;
+	servo_select(1) = -1;
+	servo_select(2) = -1;
+	servo_select(3) = -1;
+	min_cost_values(0) = -10000.0;
+	min_cost_values(1) = -10000.0;
+	min_cost_values(2) = -10000.0;
+	min_cost_values(3) = -10000.0;
 
 	// Find two maximum delta costs from DELTA_COST
 	for(int i = 0; i < servo_choose_num; i++)
@@ -199,6 +197,15 @@ void MultiServoNode::R_param_update()
 	R(5, 5) = 20;
 	R(6, 6) = 40;
 	R(7, 7) = 20;
+
+	for(int i = 0; i < 4; i++)
+	{
+		if(servo_select(i) != -1)
+		{
+			R(2 * servo_select(i), 2 * servo_select(i)) *= 30;
+			R(2 * servo_select(i) + 1, 2 * servo_select(i) + 1) *= 30;
+		}
+	}
 }
 
 void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag)

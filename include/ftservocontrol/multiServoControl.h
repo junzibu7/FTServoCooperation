@@ -20,9 +20,7 @@ public:
 	Eigen::Matrix<double,8,8> iter_A = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> iter_B = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> iter_B_buf = Eigen::Matrix<double,8,8>::Identity();
-	Eigen::Vector4d COST_WITH_CONTROL = Eigen::Vector4d::Zero();
-	Eigen::Vector4d COST_WITHOUT_CONTROL = Eigen::Vector4d::Zero();
-	Eigen::Vector4d DELTA_COST = Eigen::Vector4d::Zero();
+	
 
 	// Servo Parameters
 	double s_vel = 1000;
@@ -41,9 +39,13 @@ public:
 	bool camD_force_flag = false;
 	Eigen::Matrix<double,8,1> loss_cur = Eigen::Matrix<double,8,1>::Zero();
 	Eigen::Matrix<double,8,1> loss_nex = Eigen::Matrix<double,8,1>::Zero();
-	
 
-	// Servo Transforms
+	// Optimization Parameters
+	Eigen::Vector4i servo_select = Eigen::Vector4i::Zero();
+	Eigen::Vector4d min_cost_values = Eigen::Vector4d::Zero();
+	Eigen::Vector4d COST_WITH_CONTROL = Eigen::Vector4d::Zero();
+	Eigen::Vector4d COST_WITHOUT_CONTROL = Eigen::Vector4d::Zero();
+	Eigen::Vector4d DELTA_COST = Eigen::Vector4d::Zero();
 
 	// Publishers and Subscribers
 	rclcpp::TimerBase::SharedPtr signal_timer_;
