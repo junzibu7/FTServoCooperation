@@ -7,8 +7,13 @@ using namespace std;
 MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 {
 	// Basic Parameters	
-	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&MultiServoNode::calculate_control_signal, this));
-	evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
+	this->declare_parameter<int>("servo_control_num", 2);
+	servo_control_num = this->get_parameter("servo_control_num").as_int();
+	
+	// Frequency Parameters
+	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&MultiServoNode::calculate_control_signal, this));
+	// evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
+	
 	// System Initialization
 	sub_target_loss_camA = this->create_subscription<msgs::msg::Loss>("/target_loss_camA", 10, std::bind(&MultiServoNode::target_loss_camA_callback, this, std::placeholders::_1));
 	sub_target_loss_camB = this->create_subscription<msgs::msg::Loss>("/target_loss_camB", 10, std::bind(&MultiServoNode::target_loss_camB_callback, this, std::placeholders::_1));
@@ -22,6 +27,8 @@ MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 
 	// Clear the cost_values file
 	cost_values.open(cost_values_path, std::ios::out | std::ios::trunc);
+
+	RCLCPP_INFO(this->get_logger(), "MultiServoNode has been initialized.");
 }
 
 void MultiServoNode::target_loss_camA_callback(const msgs::msg::Loss::SharedPtr msg)
@@ -54,7 +61,7 @@ void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr 
 
 void MultiServoNode::calculate_control_signal()
 {
-	// RCLCPP_INFO(this->get_logger(),"Calculate Start !");
+	RCLCPP_INFO(this->get_logger(),"Calculate Start !");
 	Q_param_update();
 	R_param_update();
 	
@@ -63,12 +70,14 @@ void MultiServoNode::calculate_control_signal()
 
 	servo_cur = K * loss_cur;
 
+	loss_nex = iter_A * loss_cur - iter_B * servo_cur;
+
 	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
 	// RCLCPP_INFO(this->get_logger(), "servo_cur: %f %f %f %f %f %f %f %f", servo_cur(0), servo_cur(1), servo_cur(2), servo_cur(3), servo_cur(4), servo_cur(5), servo_cur(6), servo_cur(7));
 
 	iter_B_buf = iter_B;
 
-	min_cost_solve();
+	min_cost_solve(servo_control_num);
 
 	K_param_update(iter_A, iter_B_buf, true);
 
@@ -98,53 +107,74 @@ void MultiServoNode::calculate_control_signal()
 	pub_servo78_command->publish(servo78_command);
 }
 
-void MultiServoNode::cost_values_evaluate()
+void MultiServoNode::cost_values_evaluate(int i)
 {
 	// Analysis of the cost
-	COST = 0.5*(servo_cur.transpose()*R*servo_cur).value() + 0.5*(loss_nex.transpose()*Q*loss_nex).value();
-	cost_values.open(cost_values_path, std::ios::out | std::ios::app);
-	if (!cost_values.is_open()) {
-		RCLCPP_ERROR(this->get_logger(), "Failed to open cost_values.txt");
-	}else{
-		cost_values << COST << endl;
-		cost_values.close();
-	}
+	Eigen::Vector2d single_loss_cur = Eigen::Vector2d::Zero();
+	single_loss_cur(0) = loss_cur(2*i);
+	single_loss_cur(1) = loss_cur(2*i + 1);
+	Eigen::Vector2d single_servo_cur = Eigen::Vector2d::Zero();
+	single_servo_cur(0) = servo_cur(2*i);
+	single_servo_cur(1) = servo_cur(2*i + 1);
+	Eigen::Vector2d single_loss_nex = Eigen::Vector2d::Zero();
+	single_loss_nex(0) = loss_nex(2*i);
+	single_loss_nex(1) = loss_nex(2*i + 1);
+	
+	COST_WITH_CONTROL(i) = 0.5*(single_servo_cur.transpose()*(R.block<2, 2>(2*i, 2*i))*single_servo_cur).value() + 0.5*(single_loss_nex.transpose()*(Q.block<2, 2>(2*i, 2*i))*single_loss_nex).value();
+	COST_WITHOUT_CONTROL(i) = 0.5*(single_loss_cur.transpose()*(Q.block<2, 2>(2*i, 2*i))*single_loss_cur).value();
+	DELTA_COST(i) = COST_WITHOUT_CONTROL(i) - COST_WITH_CONTROL(i);
+
+	// cost_values.open(cost_values_path, std::ios::out | std::ios::app);
+	// if (!cost_values.is_open()) {
+	// 	RCLCPP_ERROR(this->get_logger(), "Failed to open cost_values.txt");
+	// }else{
+	// 	cost_values << COST << endl;
+	// 	cost_values.close();
+	// }
 }
 
-void MultiServoNode::min_cost_solve()
+void MultiServoNode::min_cost_solve(int servo_choose_num)
 {
-	double cost = 100000;
-	Eigen::Vector2i servo_select = Eigen::Vector2i::Zero();
+	Eigen::Vector4i servo_select = Eigen::Vector4i::Zero();
+	servo_select(0) = -1;
+	servo_select(1) = -1;
+	servo_select(2) = -1;
+	servo_select(3) = -1;
+	Eigen::Vector4d min_cost_values = Eigen::Vector4d::Zero();
+	min_cost_values(0) = -10000.0;
+	min_cost_values(1) = -10000.0;
+	min_cost_values(2) = -10000.0;
+	min_cost_values(3) = -10000.0;
 
-	for(int i = 0; i < 3; i++)
+	// Caculate the minimum cost
+	for(int i = 0; i < 4; i++)
 	{
-		for(int j = i + 1; j < 4; j++)
+		cost_values_evaluate(i);
+	}
+	RCLCPP_INFO(this->get_logger(), "DELTA_COST: %f %f %f %f", DELTA_COST(0), DELTA_COST(1), DELTA_COST(2), DELTA_COST(3));
+	
+
+	// Find two maximum delta costs from DELTA_COST
+	for(int i = 0; i < servo_choose_num; i++)
+	{
+		for(int j = 0; j < 4; j++)
 		{
-			if(pow(servo_cur(2*i), 2) + pow(servo_cur(2*i + 1), 2) + pow(servo_cur(2*j), 2) + pow(servo_cur(2*j + 1), 2) < cost)
+			if(DELTA_COST(j) > min_cost_values(i))
 			{
-				cost = pow(servo_cur(2*i), 2) + pow(servo_cur(2*i + 1), 2) + pow(servo_cur(2*j), 2) + pow(servo_cur(2*j + 1), 2);
-				servo_select(0) = i;
-				servo_select(1) = j;
+				min_cost_values(i) = DELTA_COST(j);
+				servo_select(i) = j;
 			}
 		}
+		DELTA_COST(servo_select(i)) = -10000;
 	}
 
-	// cout << "servo_select: " << servo_select(0) << " " << servo_select(1) << endl;
-
-	iter_B_buf.block<2, 2>(2 * servo_select(0), 2 * servo_select(0)) = Eigen::Matrix2d::Zero();
-	iter_B_buf.block<2, 2>(2 * servo_select(1), 2 * servo_select(1)) = Eigen::Matrix2d::Zero();
-
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < servo_choose_num; i++)
 	{
-		// if(servo_cur(i) > 5)
-		// {
-		// 	iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Identity();
-		// }
-		// else if(servo_cur(i) < 5)
-		// {
-		// 	iter_B_buf.block<1, 1>(i, i) = Eigen::Matrix<double, 1, 1>::Zero();
-		// }
+		iter_B_buf.block<2, 2>(2 * servo_select(i), 2 * servo_select(i)) = Eigen::Matrix2d::Zero();
 	}
+
+	// Parameters print
+	RCLCPP_INFO(this->get_logger(), "servo_select: %d %d %d %d", servo_select(0), servo_select(1), servo_select(2), servo_select(3));
 }
 
 void MultiServoNode::Q_param_update()

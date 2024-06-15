@@ -64,7 +64,12 @@ def generate_launch_description():
         'camera_config_file': camera_config_file
     }
 
-    # 添加第一个节点并设置参数
+    # 为节点multi_servogp_control设置参数
+    multi_servogp_control_params = {
+        'servo_control_num': 2
+    }
+
+    # 添加第一个舵机组节点并设置参数
     servo_group_12 = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='Single_Servogp_Control',
@@ -74,7 +79,7 @@ def generate_launch_description():
     )
     ld.add_action(servo_group_12)
 
-    # 添加第二个节点并设置参数
+    # 添加第二个舵机组节点并设置参数
     servo_group_34 = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='Single_Servogp_Control',
@@ -84,7 +89,7 @@ def generate_launch_description():
     )
     ld.add_action(servo_group_34)
 
-    # 添加第三个节点并设置参数
+    # 添加第三个舵机组节点并设置参数
     servo_group_56 = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='Single_Servogp_Control',
@@ -94,7 +99,7 @@ def generate_launch_description():
     )
     ld.add_action(servo_group_56)
 
-    # 添加第四个节点并设置参数
+    # 添加第四个舵机组节点并设置参数
     servo_group_78 = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='Single_Servogp_Control',
@@ -105,7 +110,7 @@ def generate_launch_description():
     ld.add_action(servo_group_78)
 
     # 构建base到servogroupxx的tf树
-    base_to_servogroupxx = Node(
+    base_to_servogroupxx = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='base2servogroup',
         name='base2servogroup_node',
@@ -113,7 +118,7 @@ def generate_launch_description():
     ld.add_action(base_to_servogroupxx)
 
     # 模拟目标轨迹
-    Target_Trajectory_Simulation = Node(
+    Target_Trajectory_Simulation = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='Target_Trajectory_Simulation',
         name='trajectory_node',
@@ -121,16 +126,17 @@ def generate_launch_description():
     ld.add_action(Target_Trajectory_Simulation)
 
     # 多相机协同跟踪
-    Multi_Servogp_Control = Node(
+    Multi_Servogp_Control = launch_ros.actions.Node(
         package='ftservocontrol',
         executable='Multi_Servogp_Control',
         name='MultiServogpControl',
         output='screen',
+        parameters=[multi_servogp_control_params]
     )
     ld.add_action(Multi_Servogp_Control)
 
     # 启动rviz2
-    rviz = Node(
+    rviz = launch_ros.actions.Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',

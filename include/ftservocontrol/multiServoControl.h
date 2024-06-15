@@ -20,7 +20,9 @@ public:
 	Eigen::Matrix<double,8,8> iter_A = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> iter_B = Eigen::Matrix<double,8,8>::Identity();
 	Eigen::Matrix<double,8,8> iter_B_buf = Eigen::Matrix<double,8,8>::Identity();
-	double COST = 100000;
+	Eigen::Vector4d COST_WITH_CONTROL = Eigen::Vector4d::Zero();
+	Eigen::Vector4d COST_WITHOUT_CONTROL = Eigen::Vector4d::Zero();
+	Eigen::Vector4d DELTA_COST = Eigen::Vector4d::Zero();
 
 	// Servo Parameters
 	double s_vel = 1000;
@@ -30,6 +32,7 @@ public:
 	msgs::msg::Servocommand servo34_command;
 	msgs::msg::Servocommand servo56_command;
 	msgs::msg::Servocommand servo78_command;
+	int servo_control_num = 2;
 
 	// Target Parameters
 	bool camA_force_flag = false;
@@ -86,12 +89,12 @@ public:
 	/*
 	 * @brief Evaluate the cost values
 	 */
-	void cost_values_evaluate();
+	void cost_values_evaluate(int i);
 
 	/*
 	 * @brief Solve the minimum cost problem
 	 */
-	void min_cost_solve();
+	void min_cost_solve(int servo_choose_num);
 
 	/*
 	 * @brief Update the parameters
