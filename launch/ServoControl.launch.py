@@ -20,7 +20,7 @@ def generate_launch_description():
         'target_frame': 'target',
         'cam': 'camA',
         'serial': '/dev/serial_servogroup12',
-        'up_init': 155,
+        'up_init': 180,
         'down_init': 180,
         'camera_config_file': camera_config_file
     }
