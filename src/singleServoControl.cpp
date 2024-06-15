@@ -63,7 +63,7 @@ void SingleServoNode::init(std::shared_ptr<rclcpp::Node> nh_)
 	servo_move(down_init, up_init);
 	
 
-	// std::this_thread::sleep_for(1s);
+	std::this_thread::sleep_for(5s);
 
 	// cout << "down_status:" << down_status << endl;
 	// cout << "up_status:" << up_status << endl;

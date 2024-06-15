@@ -75,7 +75,7 @@ void MultiServoNode::calculate_control_signal()
 	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
 	// RCLCPP_INFO(this->get_logger(), "servo_cur: %f %f %f %f %f %f %f %f", servo_cur(0), servo_cur(1), servo_cur(2), servo_cur(3), servo_cur(4), servo_cur(5), servo_cur(6), servo_cur(7));
 
-	iter_B_buf = iter_B;
+	iter_B_buf = Eigen::Matrix<double,8,8>::Zero();
 
 	min_cost_solve(servo_control_num);
 
@@ -168,7 +168,7 @@ void MultiServoNode::min_cost_solve(int servo_choose_num)
 
 	for(int i = 0; i < servo_choose_num; i++)
 	{
-		iter_B_buf.block<2, 2>(2 * servo_select(i), 2 * servo_select(i)) = Eigen::Matrix2d::Zero();
+		iter_B_buf.block<2, 2>(2 * servo_select(i), 2 * servo_select(i)) = Eigen::Matrix2d::Identity();
 	}
 
 	// Parameters print
