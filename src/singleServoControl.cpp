@@ -235,21 +235,21 @@ Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_status){
 	target_loss.x() = 10 * pow(target_loss_x, 3);
 	target_loss.y() = 10 * pow(target_loss_y, 3);
 
-	if(target_loss_x > 1.2){
-		target_loss.x() = 3;
-		force_flag = true;
-	}else if(target_loss_x < -1.2){
-		target_loss.x() = -3;
-		force_flag = true;
-	}
+	// if(target_loss_x > 1.2){
+	// 	target_loss.x() = 3;
+	// 	force_flag = true;
+	// }else if(target_loss_x < -1.2){
+	// 	target_loss.x() = -3;
+	// 	force_flag = true;
+	// }
 
-	if(target_loss_y > 1.2){
-		target_loss.y() = 3;
-		force_flag = true;
-	}else if(target_loss_y < -1.2){
-		target_loss.y() = -3;
-		force_flag = true;
-	}
+	// if(target_loss_y > 1.2){
+	// 	target_loss.y() = 3;
+	// 	force_flag = true;
+	// }else if(target_loss_y < -1.2){
+	// 	target_loss.y() = -3;
+	// 	force_flag = true;
+	// }
 
 	// if(cam == "camA")
 	// {
@@ -409,13 +409,15 @@ Eigen::Vector2d SingleServoNode::target_status2change(cv::Point2d target_image_p
 	theta = theta * 180.0 / M_PI;
 	phi = - phi * 180.0 / M_PI;
 
+	if(cam == "camA")
+	{
+		RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
+	}
+
 	if(abs(phi) < 1) phi = 0;
 	if(abs(theta) < 1) theta = 0;
 
-	// if(cam == "camA")
-	// {
-		// RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
-	// }
+	
 	
 	// 由theta和phi计算舵机转动角度
 	Eigen::Vector2d servo_move_target(theta, phi);

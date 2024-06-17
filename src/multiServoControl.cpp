@@ -72,7 +72,7 @@ void MultiServoNode::calculate_control_signal()
 
 	loss_nex = iter_A * loss_cur - iter_B * servo_cur;
 
-	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
+	RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
 	// RCLCPP_INFO(this->get_logger(), "servo_cur: %f %f %f %f %f %f %f %f", servo_cur(0), servo_cur(1), servo_cur(2), servo_cur(3), servo_cur(4), servo_cur(5), servo_cur(6), servo_cur(7));
 
 	iter_B_buf = Eigen::Matrix<double,8,8>::Zero();
@@ -84,7 +84,7 @@ void MultiServoNode::calculate_control_signal()
 	servo_cur = K * loss_cur;
 
 	loss_nex = iter_A * loss_cur - iter_B_buf * servo_cur;
-	// RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
+	RCLCPP_INFO(this->get_logger(), "loss_nex: %f %f %f %f %f %f %f %f", loss_nex(0), loss_nex(1), loss_nex(2), loss_nex(3), loss_nex(4), loss_nex(5), loss_nex(6), loss_nex(7));
 	// RCLCPP_INFO(this->get_logger(), "delta_loss: %f %f %f %f %f %f %f %f", loss_nex(0) - loss_cur(0), loss_nex(1) - loss_cur(1), loss_nex(2) - loss_cur(2), loss_nex(3) - loss_cur(3), loss_nex(4) - loss_cur(4), loss_nex(5) - loss_cur(5), loss_nex(6) - loss_cur(6), loss_nex(7) - loss_cur(7));
 
 	servo12_command.state_down = loss_nex(0);
@@ -190,22 +190,22 @@ void MultiServoNode::Q_param_update()
 void MultiServoNode::R_param_update()
 {
 	R(0, 0) = 40;
-	R(1, 1) = 20;
+	R(1, 1) = 30;
 	R(2, 2) = 40;
-	R(3, 3) = 20;
+	R(3, 3) = 30;
 	R(4, 4) = 40;
-	R(5, 5) = 20;
+	R(5, 5) = 30;
 	R(6, 6) = 40;
-	R(7, 7) = 20;
+	R(7, 7) = 30;
 
-	for(int i = 0; i < 4; i++)
-	{
-		if(servo_select(i) != -1)
-		{
-			R(2 * servo_select(i), 2 * servo_select(i)) *= 30;
-			R(2 * servo_select(i) + 1, 2 * servo_select(i) + 1) *= 30;
-		}
-	}
+	// for(int i = 0; i < 4; i++)
+	// {
+	// 	if(servo_select(i) != -1)
+	// 	{
+	// 		R(2 * servo_select(i), 2 * servo_select(i)) *= 30;
+	// 		R(2 * servo_select(i) + 1, 2 * servo_select(i) + 1) *= 30;
+	// 	}
+	// }
 }
 
 void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag)

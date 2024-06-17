@@ -44,7 +44,7 @@ public:
         trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
         sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectorySimulation::vicon_base_callback, this, std::placeholders::_1));
         // sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/viconxt/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
-        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/xt/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
+        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/viconxt/pose", 10, std::bind(&TargetTrajectorySimulation::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 

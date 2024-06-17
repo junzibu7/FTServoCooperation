@@ -44,40 +44,40 @@ public:
         stamped_base_to_servogroup12.header.stamp = this->now();
         stamped_base_to_servogroup12.header.frame_id = "base";
         stamped_base_to_servogroup12.child_frame_id = "servogroup12";
-        q.setRPY(0, 0, std::atan(54.0 / 37.0));
-        stamped_base_to_servogroup12.transform.translation.x = -0.37 * 2;
-        stamped_base_to_servogroup12.transform.translation.y = -0.54 * 2;
-        stamped_base_to_servogroup12.transform.translation.z = 0.0;
+        q.setRPY(0, 5*M_PI/180, (27.54+4.227)*M_PI/180.0);
+        stamped_base_to_servogroup12.transform.translation.x = -0.951+1.07;
+        stamped_base_to_servogroup12.transform.translation.y = -0.693+0.772;
+        stamped_base_to_servogroup12.transform.translation.z = -0.2;
         stamped_base_to_servogroup12.transform.rotation = tf2::toMsg(q);
 
         // 发布 base 到 servogroup34 的变换
         stamped_base_to_servogroup34.header.stamp = this->now();
         stamped_base_to_servogroup34.header.frame_id = "base";
         stamped_base_to_servogroup34.child_frame_id = "servogroup34";
-        q.setRPY(0, 0, -std::atan(54.0 / 37.0));
-        stamped_base_to_servogroup34.transform.translation.x = -0.37 * 2;
-        stamped_base_to_servogroup34.transform.translation.y = 0.54 * 2;
-        stamped_base_to_servogroup34.transform.translation.z = 0.0;
+        q.setRPY(0, 0, (-40.1+4.227)*M_PI/180.0);
+        stamped_base_to_servogroup34.transform.translation.x = -0.801+1.07;
+        stamped_base_to_servogroup34.transform.translation.y = 0.876+0.772;
+        stamped_base_to_servogroup34.transform.translation.z = -0.2;
         stamped_base_to_servogroup34.transform.rotation = tf2::toMsg(q);
 
         // 发布 base 到 servogroup56 的变换
         stamped_base_to_servogroup56.header.stamp = this->now();
         stamped_base_to_servogroup56.header.frame_id = "base";
         stamped_base_to_servogroup56.child_frame_id = "servogroup56";
-        q.setRPY(0, 0, std::atan(54.0 / 37.0) + M_PI);
-        stamped_base_to_servogroup56.transform.translation.x = 0.37 * 2;
-        stamped_base_to_servogroup56.transform.translation.y = 0.54 * 2;
-        stamped_base_to_servogroup56.transform.translation.z = 0.0;
+        q.setRPY(0, -5*M_PI/180, (213.3+4.227)*M_PI/180.0);
+        stamped_base_to_servogroup56.transform.translation.x = 0.886+1.07;
+        stamped_base_to_servogroup56.transform.translation.y = 0.778+0.772;
+        stamped_base_to_servogroup56.transform.translation.z = -0.2;
         stamped_base_to_servogroup56.transform.rotation = tf2::toMsg(q);
 
         // 发布 base 到 servogroup78 的变换
         stamped_base_to_servogroup78.header.stamp = this->now();
         stamped_base_to_servogroup78.header.frame_id = "base";
         stamped_base_to_servogroup78.child_frame_id = "servogroup78";
-        q.setRPY(0, 0, -std::atan(54.0 / 37.0) + M_PI);
-        stamped_base_to_servogroup78.transform.translation.x = 0.37 * 2;
-        stamped_base_to_servogroup78.transform.translation.y = -0.54 * 2;
-        stamped_base_to_servogroup78.transform.translation.z = 0.0;
+        q.setRPY(0, 0, (141+4.227)*M_PI/180.0);
+        stamped_base_to_servogroup78.transform.translation.x = 0.805+1.07;
+        stamped_base_to_servogroup78.transform.translation.y = -0.867+0.772;
+        stamped_base_to_servogroup78.transform.translation.z = -0.2;
         stamped_base_to_servogroup78.transform.rotation = tf2::toMsg(q);
 
         base_to_servogroup12_publisher->publish(stamped_base_to_servogroup12);
@@ -104,7 +104,7 @@ public:
     rclcpp::TimerBase::SharedPtr timer_;
 
     tf2::Quaternion q;
-    tf2::Vector3 v;
+    tf2::Vector3 t;
 
     geometry_msgs::msg::TransformStamped stamped_base_to_servogroup12;
     geometry_msgs::msg::TransformStamped stamped_base_to_servogroup34; 

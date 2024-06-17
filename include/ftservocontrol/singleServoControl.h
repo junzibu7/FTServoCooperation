@@ -54,18 +54,18 @@
 using namespace std::chrono_literals;
 using namespace std;
 
-#define SERVO_ENABLE true
+// #define SERVO_ENABLE true
 
 class SingleServoNode: public rclcpp::Node
 {
 public:
-	//Basic Parameters
+	// Basic Parameters
 	string source_frame, target_frame, cam;
 	string serial_str;
 	std::shared_ptr<rclcpp::Node> nh;
 	std::string camera_config_file;
 
-	//Servo Parameters
+	// Servo Parameters
 	ftServo _servo;
 	int id_up, id_down;
 	const double up_status_init = 180.0;
@@ -86,7 +86,7 @@ public:
 	int down_init =180;
 	bool force_flag = false;
 
-	//Target Parameters
+	// Target Parameters
 	double estimation_t_x = 1.0;
 	double estimation_t_y = 0.0;
 	double estimation_t_z = 0.0;
@@ -100,14 +100,14 @@ public:
 	vector<cv::Point3f> target_point;
 	vector<cv::Point2f> image_point;
 
-	//Camera Parameters
+	// Camera Parameters
 	double fx, fy, cx, cy;
 	cv::Mat camera_matrix;
 	cv::Mat distortion_coefficients;
 	double DepthofField_x = 0.001;
 	double DepthofField_y = 0.001;
 
-	//Servo Transforms
+	// Servo Transforms
 	Eigen::Matrix4Xd T_DU = Eigen::Matrix4d::Identity();
 	Eigen::Matrix4Xd T_UB = Eigen::Matrix4d::Identity();
 	Eigen::Matrix4Xd T_BC = Eigen::Matrix4d::Identity();
@@ -115,7 +115,7 @@ public:
 	Eigen::Matrix4Xd T_cam_to_coopestimation = Eigen::Matrix4d::Identity();
 	Eigen::Matrix4Xd T_cam_to_estimation = Eigen::Matrix4d::Identity();
 
-	//Publishers and Subscribers
+	// Publishers and Subscribers
 	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr pub_servogroup_to_cam;
 	rclcpp::Publisher<msgs::msg::Loss>::SharedPtr pub_target_loss;
@@ -125,7 +125,10 @@ public:
 	rclcpp::Subscription<msgs::msg::Landmark>::SharedPtr sub_irlandmark;
 	rclcpp::Subscription<msgs::msg::Servocommand>::SharedPtr sub_ServoCommand;
 
-	//tf
+	// Process Parameters Analysis
+	
+
+	// tf
 	std::shared_ptr<tf2_ros::TransformBroadcaster> servogroup_to_cam;
 	tf2::Stamped<tf2::Transform> cam_to_estimation;
 	tf2::Stamped<tf2::Transform> cam_to_coopestimation;
