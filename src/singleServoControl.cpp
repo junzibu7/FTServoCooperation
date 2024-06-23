@@ -231,25 +231,22 @@ Eigen::Vector2d SingleServoNode::target_status2loss(cv::Point2f target_status){
 	// Calculate the target loss
 	Eigen::Vector2d target_loss;
 
-	//cubic loss version
-	target_loss.x() = 10 * pow(target_loss_x, 3);
-	target_loss.y() = 10 * pow(target_loss_y, 3);
+	// Loss version
+	if(target_loss_x > 0){
+		target_loss.x() = (atan2((80*target_loss_x - 66), 1) - atan2(-66, 1));
+	}else if(target_loss_x < 0){
+		target_loss.x() = (atan2((80*target_loss_x + 66), 1) - atan2(66, 1));
+	}else{
+		target_loss.x() = 0;
+	}
 
-	// if(target_loss_x > 1.2){
-	// 	target_loss.x() = 3;
-	// 	force_flag = true;
-	// }else if(target_loss_x < -1.2){
-	// 	target_loss.x() = -3;
-	// 	force_flag = true;
-	// }
-
-	// if(target_loss_y > 1.2){
-	// 	target_loss.y() = 3;
-	// 	force_flag = true;
-	// }else if(target_loss_y < -1.2){
-	// 	target_loss.y() = -3;
-	// 	force_flag = true;
-	// }
+	if(target_loss_y > 0){
+		target_loss.y() = (atan2((80*target_loss_y - 66), 1) - atan2(-66, 1));
+	}else if(target_loss_y < 0){
+		target_loss.y() = (atan2((80*target_loss_y + 66), 1) - atan2(66, 1));
+	}else{
+		target_loss.y() = 0;
+	}
 
 	// if(cam == "camA")
 	// {
@@ -267,16 +264,20 @@ cv::Point2d SingleServoNode::target_loss2status(double loss_x, double loss_y, bo
 	double x_para = 0.0;
 	double y_para = 0.0;
 
-	if(loss_x < 0){
-		x_para = - pow(-loss_x / 10.0, 1.0 / 3.0);
+	if(loss_x > 0){
+		x_para = (tan(loss_x + atan2(-66, 1)) + 66) / 80;
+	}else if(loss_x < 0){
+		x_para = (tan(loss_x + atan2(66, 1)) - 66) / 80;
 	}else{
-		x_para = pow(loss_x / 10.0, 1.0 / 3.0);
+		x_para = 0.0;
 	}
 
-	if(loss_y < 0){
-		y_para = - pow(-loss_y / 10.0, 1.0 / 3.0);
-	}else{	
-		y_para = pow(loss_y / 10.0, 1.0 / 3.0);
+	if(loss_y > 0){
+		y_para = (tan(loss_y + atan2(-66, 1)) + 66) / 80;
+	}else if(loss_y < 0){
+		y_para = (tan(loss_y + atan2(66, 1)) - 66) / 80;
+	}else{
+		y_para = 0.0;
 	}
 
 	target_image_pos.x = 320.0 + 320.0 * x_para;

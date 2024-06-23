@@ -11,7 +11,7 @@ MultiServoNode::MultiServoNode(const std::string &node_name) : Node(node_name)
 	servo_control_num = this->get_parameter("servo_control_num").as_int();
 	
 	// Frequency Parameters
-	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&MultiServoNode::calculate_control_signal, this));
+	signal_timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&MultiServoNode::calculate_control_signal, this));
 	// evaluate_timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&MultiServoNode::cost_values_evaluate, this));
 	
 	// System Initialization
@@ -189,14 +189,14 @@ void MultiServoNode::Q_param_update()
 
 void MultiServoNode::R_param_update()
 {
-	R(0, 0) = 40;
-	R(1, 1) = 30;
-	R(2, 2) = 40;
-	R(3, 3) = 30;
-	R(4, 4) = 40;
-	R(5, 5) = 30;
-	R(6, 6) = 40;
-	R(7, 7) = 30;
+	R(0, 0) = 40*2;
+	R(1, 1) = 25*2;
+	R(2, 2) = 40*2;
+	R(3, 3) = 25*2;
+	R(4, 4) = 40*2;
+	R(5, 5) = 25*2;
+	R(6, 6) = 40*2;
+	R(7, 7) = 25*2;
 
 	// for(int i = 0; i < 4; i++)
 	// {
