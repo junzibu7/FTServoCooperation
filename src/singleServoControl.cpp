@@ -410,10 +410,10 @@ Eigen::Vector2d SingleServoNode::target_status2change(cv::Point2d target_image_p
 	theta = theta * 180.0 / M_PI;
 	phi = - phi * 180.0 / M_PI;
 
-	if(cam == "camA")
-	{
-		RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
-	}
+	// if(cam == "camA")
+	// {
+	// 	RCLCPP_INFO(nh->get_logger(), "theta: %f, phi: %f", theta, phi);
+	// }
 
 	if(abs(phi) < 1) phi = 0;
 	if(abs(theta) < 1) theta = 0;

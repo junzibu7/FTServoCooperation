@@ -41,10 +41,10 @@ public:
     TargetTrajectory() : Node("TargetTrajectory")
     {
         // timer_ = this->create_wall_timer(std::chrono::milliseconds(33), std::bind(&TargetTrajectory::publish_trajectory, this));
-        trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("trajectory", 1);
+        trajectory_publisher = this->create_publisher<geometry_msgs::msg::TransformStamped>("/trajectory", 1);
         sub_vicon_base = this->create_subscription<geometry_msgs::msg::PoseStamped>("/uwba0/mocap/pos", 10, std::bind(&TargetTrajectory::vicon_base_callback, this, std::placeholders::_1));
         // sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/viconxt/pose", 10, std::bind(&TargetTrajectory::vicon_target_callback, this, std::placeholders::_1));
-        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("estimate/xt/pose", 10, std::bind(&TargetTrajectory::vicon_target_callback, this, std::placeholders::_1));
+        sub_vicon_target = this->create_subscription<geometry_msgs::msg::PoseStamped>("/estimate/xt/pose", 10, std::bind(&TargetTrajectory::vicon_target_callback, this, std::placeholders::_1));
         trajectory = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     }
 
@@ -162,6 +162,8 @@ public:
 
         trajectory_publisher->publish(msg_base_to_target);
         trajectory->sendTransform(msg_base_to_target);
+
+        // cout << "target_position: " << target_position.x() << " " << target_position.y() << " " << target_position.z() << endl;
     }
 
     void vicon_base_callback(const geometry_msgs::msg::PoseStamped::SharedPtr msg)

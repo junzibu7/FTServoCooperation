@@ -61,7 +61,7 @@ void MultiServoNode::target_loss_camD_callback(const msgs::msg::Loss::SharedPtr 
 
 void MultiServoNode::calculate_control_signal()
 {
-	RCLCPP_INFO(this->get_logger(),"Calculate Start !");
+	// RCLCPP_INFO(this->get_logger(),"Calculate Start !");
 	Q_param_update();
 	R_param_update();
 	
@@ -72,10 +72,12 @@ void MultiServoNode::calculate_control_signal()
 
 	loss_nex = iter_A * loss_cur - iter_B * servo_cur;
 
-	RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
+	// RCLCPP_INFO(this->get_logger(), "loss_cur: %f %f %f %f %f %f %f %f", loss_cur(0), loss_cur(1), loss_cur(2), loss_cur(3), loss_cur(4), loss_cur(5), loss_cur(6), loss_cur(7));
 	// RCLCPP_INFO(this->get_logger(), "servo_cur: %f %f %f %f %f %f %f %f", servo_cur(0), servo_cur(1), servo_cur(2), servo_cur(3), servo_cur(4), servo_cur(5), servo_cur(6), servo_cur(7));
 
 	iter_B_buf = Eigen::Matrix<double,8,8>::Zero();
+
+	servo_control_num_optimize();
 
 	min_cost_solve(servo_control_num);
 
@@ -140,7 +142,8 @@ void MultiServoNode::min_cost_solve(int servo_choose_num)
 	{
 		cost_values_evaluate(i);
 	}
-	RCLCPP_INFO(this->get_logger(), "DELTA_COST: %f %f %f %f", DELTA_COST(0), DELTA_COST(1), DELTA_COST(2), DELTA_COST(3));
+
+	// RCLCPP_INFO(this->get_logger(), "DELTA_COST: %f %f %f %f", DELTA_COST(0), DELTA_COST(1), DELTA_COST(2), DELTA_COST(3));
 	
 	// Initialize the servo_select and min_cost_values
 	servo_select(0) = -1;
@@ -231,4 +234,20 @@ void MultiServoNode::K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<d
 		// cout << "K: " << endl << K << endl;
 	}
 	
+}
+
+void MultiServoNode::servo_control_num_optimize()
+{
+	LOSS_NUM = 0;
+	for(int i = 0; i < loss_cur.size(); i++)
+	{
+		LOSS_NUM += loss_cur(i);
+	}
+
+	if(LOSS_NUM <= 3) servo_control_num = 1;
+	if((LOSS_NUM <= 7) && (LOSS_NUM > 1)) servo_control_num = 2;
+	if((LOSS_NUM <= 15) && (LOSS_NUM > 7)) servo_control_num = 3;
+	if(LOSS_NUM > 15) servo_control_num = 4;
+
+	cout << "servo_control_num:" << servo_control_num << endl;
 }

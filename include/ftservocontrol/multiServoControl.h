@@ -31,6 +31,7 @@ public:
 	msgs::msg::Servocommand servo56_command;
 	msgs::msg::Servocommand servo78_command;
 	int servo_control_num = 2;
+	double LOSS_NUM = 0;
 
 	// Target Parameters
 	bool camA_force_flag = false;
@@ -104,6 +105,8 @@ public:
 	void Q_param_update();
 	void R_param_update();
 	void K_param_update(Eigen::Matrix<double,8,8> A, Eigen::Matrix<double,8,8> B, bool print_flag);
+
+	void servo_control_num_optimize();
 
 };
 

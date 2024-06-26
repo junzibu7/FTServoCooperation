@@ -118,12 +118,13 @@ def generate_launch_description():
     ld.add_action(base_to_servogroupxx)
 
     # 模拟目标轨迹
-    Target_Trajectory_Simulation = launch_ros.actions.Node(
+    Target_Trajectory = launch_ros.actions.Node(
         package='ftservocontrol',
-        executable='Target_Trajectory_Simulation',
+        executable='Target_Trajectory',
         name='trajectory_node',
+        output='screen',
     )
-    ld.add_action(Target_Trajectory_Simulation)
+    ld.add_action(Target_Trajectory)
 
     # 多相机协同跟踪
     Multi_Servogp_Control = launch_ros.actions.Node(
